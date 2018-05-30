@@ -1,0 +1,20 @@
+{
+  "name": "didery.js",
+  "version": "1.0.0",
+  "description": "Javascript client library for didery.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx webpack --mode development",
+    "watch": "npx webpack -w --mode development",
+    "build": "npx webpack --mode production"
+  },
+  "author": "Brady Hammond",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "webpack": "^4.9.1",
+    "webpack-cli": "^2.1.4",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
