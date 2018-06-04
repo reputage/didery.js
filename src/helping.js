@@ -75,6 +75,121 @@ export function parseSignatureHeader(signature) {
     }
 }
 
+export function getHistory(baseURL, did="") {
+    let fullURL = baseURL.replace(/\/$/, "") + "/history";
+    if (did != "") {
+        fullURL += "/" + did;
+    }
+
+    let serverResponse = "Could not retrieve server response.";
+    return fetch(fullURL).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        console.log('There has been a problem with a fetch operation: ', error.message);
+    }).then(function(obj) {
+        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+            serverResponse = "No history found.";
+        }
+        else {
+            serverResponse = obj.data;
+        }
+        return serverResponse;
+    });
+}
+
+export function postHistory(baseURL, signature, data) {
+    let fullURL = baseURL.replace(/\/$/, "") + "/history";
+    return fetch(fullURL, {
+        body: JSON.stringify(data),
+        headers: {
+            'signature': signature,
+            'content-type': 'application/json'
+        },
+        method: 'POST'
+    }).then(response => response.json());
+}
+
+export function putHistory() {
+
+}
+
+export function getBlobs(baseURL, did="") {
+    let fullURL = baseURL.replace(/\/$/, "") + "/blob";
+    if (did != "") {
+        fullURL += "/" + did;
+    }
+
+    let serverResponse = "Could not retrieve server response.";
+    return fetch(fullURL).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        console.log('There has been a problem with a fetch operation: ', error.message);
+    }).then(function(obj) {
+        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+            serverResponse = "No blobs found.";
+        }
+        else {
+            serverResponse = obj.data;
+        }
+        return serverResponse;
+    });
+}
+
+export function postBlobs() {}
+export function putBlobs() {}
+
+export function getRelays(baseURL) {
+    let fullURL = baseURL.replace(/\/$/, "") + "/relay";
+    let serverResponse = "Could not retrieve server response.";
+    return fetch(fullURL).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        console.log('There has been a problem with a fetch operation: ', error.message);
+    }).then(function(obj) {
+        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+            serverResponse = "No relays found.";
+        }
+        else {
+            serverResponse = obj.data;
+        }
+        return serverResponse;
+    });
+}
+
+export function postRelays() {}
+export function putRelays() {}
+export function deleteRelays() {}
+
+export function getErrors(baseURL) {
+    let fullURL = baseURL.replace(/\/$/, "") + "/errors";
+    let serverResponse = "Could not retrieve server response.";
+    return fetch(fullURL).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        console.log('There has been a problem with a fetch operation: ', error.message);
+    }).then(function(obj) {
+        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+            serverResponse = "No errors found.";
+        }
+        else {
+            serverResponse = obj.data;
+        }
+        return serverResponse;
+    });
+}
+
 // ================================================== //
 //                        EOF                         //
 // ================================================== //
