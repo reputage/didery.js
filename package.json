@@ -10,6 +10,11 @@
   },
   "author": "Brady Hammond",
   "license": "ISC",
+  "dependencies": {
+    "libsodium": "^0.7.3",
+    "libsodium-wrappers": "^0.7.3",
+    "moment": "^2.22.2"
+  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

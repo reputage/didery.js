@@ -9,6 +9,10 @@
 //                     IMPORTS                        //
 // ================================================== //
 
+import { postHistory } from "./api";
+const _sodium = require('libsodium-wrappers');
+const moment = require('moment');
+
 // ================================================== //
 //                     FUNCTIONS                      //
 // ================================================== //
@@ -75,263 +79,163 @@ export function parseSignatureHeader(signature) {
     }
 }
 
-export function getHistory(baseURL, did="") {
-    /* Hits the GET history endpoint of a didery server and returns the result of the
-    ensuing promise.
+// ================================================== //
+
+export async function makeDID(vk, method="dad") {
+    /* Creates and returns DID from byutes vk.
 
         Parameters:
-        baseURL - String of server's base URL
-        did - Optional string of did (used to retrieve a single history entry)
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/history";
-    if (did != "") {
-        fullURL += "/" + did;
+        vk - 32 byte verifier key from EdDSA (Ed25519) key pair
+    */
+    await _sodium.ready;
+    const sodium = _sodium;
+
+    let vk64u = sodium.to_base64(vk, sodium.base64_variants.URLSAFE);
+    return `did:${method}:${vk64u}`;
+}
+
+// ================================================== //
+
+export async function generateKeyPair(seed=[]) {
+    /* Uses libsodium to generate an ed25519 key pair. Returns an array with
+    [privateKey, publicKey].
+
+        Paramters:
+        seed - Optional byte array seed
+    */
+    await _sodium.ready;
+    const sodium = _sodium;
+
+    if (seed === undefined || seed.length === 0) {
+        let uint8buffer = sodium.randombytes_buf(sodium.crypto_sign_SEEDBYTES);
+        seed = new Uint8Array(uint8buffer, 0, 32);
     }
 
-    let serverResponse = "Could not retrieve server response.";
-    return fetch(fullURL).then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
-    }).then(function(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            serverResponse = "No history found.";
-        }
-        else {
-            serverResponse = obj.data;
-        }
-        return serverResponse;
-    });
+    let keypair;
+    keypair = sodium.crypto_sign_seed_keypair(seed);
+
+    return [keypair.privateKey, keypair.publicKey];
 }
 
-export function postHistory(baseURL, signature, data) {
-    /* Hits the POST history endpoint of a didery server and returns the result of the
-    ensuing promise.
 
-        Parameters:
-        baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
-        data - JSON of data to pe posted to server
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/history";
-    return fetch(fullURL, {
-        body: JSON.stringify(data),
-        headers: {
-            'signature': signature,
-            'content-type': 'application/json'
-        },
-        method: 'POST'
-    }).then(response => response.json());
+// ================================================== //
+
+export async function signResource(resource, sk) {
+    await _sodium.ready;
+    const sodium = _sodium;
+
+    let sig = sodium.crypto_sign(resource, sk);
+    sig = sig.slice(0, 64);
+
+    return sodium.to_base64(sig, sodium.base64_variants.URLSAFE);
 }
 
-export function putHistory() {
-    /* Hits the POST history endpoint of a didery server and returns the result of the
-    ensuing promise.
+// ================================================== //
+
+
+export async function toBase64(key) {
+    /* Converts a byte array to a unicode base64 url-file safe string
 
         Parameters:
-        baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
-        data - JSON of data to be posted to server
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/history";
-    return fetch(fullURL, {
-        body: JSON.stringify(data),
-        headers: {
-            'signature': signature,
-            'content-type': 'application/json'
-        },
-        method: 'PUT'
-    }).then(response => response.json());
+        key - Byte array
+    */
+    await await _sodium.ready;
+    const sodium = _sodium;
+
+    return sodium.to_base64(key, sodium.base64_variants.URLSAFE);
 }
 
-export function getBlobs(baseURL, did="") {
-    /* Hits the GET blobs endpoint of a didery server and returns the result of the
-    ensuing promise.
+// ================================================== //
+
+export async function fromBase64(key64u) {
+    /* Converts a unicode base64 url-file safe string to a byte array
 
         Parameters:
-        baseURL - String of server's base URL
-        did - Optional string of did (used to retrieve a single history entry)
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/blob";
-    if (did != "") {
-        fullURL += "/" + did;
+        key64u - Unicode base64 string
+    */
+    await await _sodium.ready;
+    const sodium = _sodium;
+
+    return sodium.from_base64(key64u);
+}
+
+// ================================================== //
+
+export async function keyInceptionEvent(seed=[], post=true, baseURL="http://127.0.0.1:8080/", save=true, storage="local") {
+    /* Generates a public private key pair. Optionally, posts it to a didery server
+    and saves the private key in storage.
+
+        Parameters:
+        seed - Optional seed for key generation
+        post - Boolean for posting to server or not
+        baseURL - String of server URL
+        save - Boolean for saving private key or not
+        storage - Private key storage location accepted values include "local", "session"
+        or a file path.
+    */
+
+    let keypair = await generateKeyPair(seed);
+    if (post === true) {
+        let did = await makeDID(keypair[1]);
+        let signer = await toBase64(keypair[1]);
+        let body = {
+            "id": did,
+            "changed": moment().format(),
+            "signer": 0,
+            "signers": [signer, signer]
+        };
+
+        let signature = await signResource(JSON.stringify(body), keypair[0]);
+        signature = "signer=\"" + signature + "\"";
+        try {
+            let response = await postHistory(baseURL, signature, body);
+            console.log(response);
+        }
+
+        catch (error) {
+            console.log("Could not post to server: " + error + ".");
+        }
     }
 
-    let serverResponse = "Could not retrieve server response.";
-    return fetch(fullURL).then(response => {
-        if (response.ok) {
-            return response.json();
+    if (save === true) {
+        if (storage.toLowerCase() === "local") {
+            localStorage.setItem("dideryPrivateKey", keypair[0]);
+            console.log("Key saved to local storage.");
         }
-        throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
-    }).then(function(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            serverResponse = "No blobs found.";
+
+        else if (storage.toLowerCase() === "session") {
+            sessionStorage.setItem("dideryPrivateKey", keypair[0]);
+            console.log("Key saved to session storage.");
         }
+
         else {
-            serverResponse = obj;
+            try {
+                let blob = new Blob([keypair[0]], {type: "text/plain;charset=utf-8"});
+                if (storage.endsWith(".txt")) {
+                    saveAs(blob, storage);
+                    console.log("Key saved to " + storage + ".");
+                }
+
+                else if (storage.endsWith("/")) {
+                    storage = storage + "dideryPrivateKey.txt";
+                    saveAs(blob, storage);
+                    console.log("Key saved to " + storage + ".");
+                }
+
+                else {
+                    storage = storage + "/dideryPrivateKey.txt";
+                    saveAs(blob, storage + "/dideryPrivateKey.txt");
+                    console.log("Key saved to " + storage + ".");
+                }
+            }
+            
+            catch (error) {
+                console.log("Could not save key to local file: " + error + ".");
+            }
         }
-        return serverResponse;
-    });
-}
+    }
 
-export function postBlobs(baseURL, signature, data) {
-    /* Hits the POST blobs endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
-        data - JSON of data to be posted to server
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/blob";
-    return fetch(fullURL, {
-        body: JSON.stringify(data),
-        headers: {
-            'signature': signature,
-            'content-type': 'application/json'
-        },
-        method: 'POST'
-    }).then(response => response.json());
-}
-
-export function putBlobs(baseURL, signature, data, did) {
-    /* Hits the PUT blobs endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
-        data - JSON of data to be posted to server
-        did - String of did of blob to be edited
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/blob/" + did;
-    return fetch(fullURL, {
-        body: JSON.stringify(data),
-        headers: {
-            'signature': signature,
-            'content-type': 'application/json'
-        },
-        method: 'PUT'
-    }).then(response => response.json());
-}
-
-export function getRelays(baseURL) {
-    /* Hits the GET relays endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/relay";
-    let serverResponse = "Could not retrieve server response.";
-    return fetch(fullURL).then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
-    }).then(function(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            serverResponse = "No relays found.";
-        }
-        else {
-            serverResponse = obj;
-        }
-        return serverResponse;
-    });
-}
-
-export function postRelays(baseURL, data) {
-    /* Hits the POST relays endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-        data - JSON of data to be posted to server
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/relay";
-    return fetch(fullURL, {
-        body: JSON.stringify(data),
-        headers: {
-            'content-type': 'application/json'
-        },
-        method: 'POST'
-    }).then(response => response.json());
-}
-
-export function putRelays(baseURL, data, uid) {
-    /* Hits the PUT relays endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-        data - JSON of data to be posted to server
-        uid - String of uid of relay to be edited
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/relay/" + uid;
-    return fetch(fullURL, {
-        body: JSON.stringify(data),
-        headers: {
-            'content-type': 'application/json'
-        },
-        method: 'PUT'
-    }).then(response => response.json());
-}
-
-export function deleteRelays(baseURL, uid) {
-    /* Hits the DELETE relays endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-        uid - String of uid of relay to be edited
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/relay/" + uid;
-    return fetch(fullURL, {
-        method: 'DELETE'
-    }).then(function(response) {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
-    }).then(function(obj) {
-        return obj;
-    });
-}
-
-export function getErrors(baseURL) {
-    /* Hits the GET errors endpoint of a didery server and returns the result of the
-    ensuing promise.
-
-        Parameters:
-        baseURL - String of server's base URL
-     */
-    let fullURL = baseURL.replace(/\/$/, "") + "/errors";
-    let serverResponse = "Could not retrieve server response.";
-    return fetch(fullURL).then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
-    }).then(function(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            serverResponse = "No errors found.";
-        }
-        else {
-            serverResponse = obj.data;
-        }
-        return serverResponse;
-    });
+    return keypair;
 }
 
 // ================================================== //
