@@ -9,12 +9,14 @@
 //                     IMPORTS                        //
 // ================================================== //
 
-import {keyInceptionEvent} from "./helping";
+import {fromBase64, keyInceptionEvent, signResource} from "./helping";
+import {getHistory, putHistory} from "./api";
+
 // ================================================== //
 //                       MAIN                         //
 // ================================================== //
 
-keyInceptionEvent();
+
 
 // ================================================== //
 //                        EOF                         //

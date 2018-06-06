@@ -13,7 +13,7 @@
 //                     FUNCTIONS                      //
 // ================================================== //
 
-export function getHistory(baseURL, did="") {
+export function getHistory(baseURL="http://127.0.0.1:8080/", did="") {
     /* Hits the GET history endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -22,7 +22,7 @@ export function getHistory(baseURL, did="") {
         did - Optional string of did (used to retrieve a single history entry)
      */
     let fullURL = baseURL.replace(/\/$/, "") + "/history";
-    if (did != "") {
+    if (did !== "") {
         fullURL += "/" + did;
     }
 
@@ -47,7 +47,7 @@ export function getHistory(baseURL, did="") {
 
 // ================================================== //
 
-export function postHistory(baseURL, signature, data) {
+export function postHistory(signature, data, baseURL="http://127.0.0.1:8080/") {
     /* Hits the POST history endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -56,7 +56,6 @@ export function postHistory(baseURL, signature, data) {
         signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
         data - JSON of data to pe posted to server
      */
-    console.log(signature);
     let fullURL = baseURL.replace(/\/$/, "") + "/history";
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -70,7 +69,7 @@ export function postHistory(baseURL, signature, data) {
 
 // ================================================== //
 
-export function putHistory(baseURL, signature, data, did) {
+export function putHistory(signature, data, did, baseURL="http://127.0.0.1:8080/") {
     /* Hits the POST history endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -92,7 +91,7 @@ export function putHistory(baseURL, signature, data, did) {
 
 // ================================================== //
 
-export function getBlobs(baseURL, did="") {
+export function getBlobs(baseURL="http://127.0.0.1:8080/", did="") {
     /* Hits the GET blobs endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -101,7 +100,7 @@ export function getBlobs(baseURL, did="") {
         did - Optional string of did (used to retrieve a single history entry)
      */
     let fullURL = baseURL.replace(/\/$/, "") + "/blob";
-    if (did != "") {
+    if (did !== "") {
         fullURL += "/" + did;
     }
 
@@ -126,7 +125,7 @@ export function getBlobs(baseURL, did="") {
 
 // ================================================== //
 
-export function postBlobs(baseURL, signature, data) {
+export function postBlobs(signature, data, baseURL="http://127.0.0.1:8080/") {
     /* Hits the POST blobs endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -148,7 +147,7 @@ export function postBlobs(baseURL, signature, data) {
 
 // ================================================== //
 
-export function putBlobs(baseURL, signature, data, did) {
+export function putBlobs(signature, data, did, baseURL="http://127.0.0.1:8080/") {
     /* Hits the PUT blobs endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -171,7 +170,7 @@ export function putBlobs(baseURL, signature, data, did) {
 
 // ================================================== //
 
-export function getRelays(baseURL) {
+export function getRelays(baseURL="http://127.0.0.1:8080/") {
     /* Hits the GET relays endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -200,7 +199,7 @@ export function getRelays(baseURL) {
 
 // ================================================== //
 
-export function postRelays(baseURL, data) {
+export function postRelays(data, baseURL="http://127.0.0.1:8080/") {
     /* Hits the POST relays endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -220,7 +219,7 @@ export function postRelays(baseURL, data) {
 
 // ================================================== //
 
-export function putRelays(baseURL, data, uid) {
+export function putRelays(data, uid, baseURL="http://127.0.0.1:8080/") {
     /* Hits the PUT relays endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -241,7 +240,7 @@ export function putRelays(baseURL, data, uid) {
 
 // ================================================== //
 
-export function deleteRelays(baseURL, uid) {
+export function deleteRelays(uid, baseURL="http://127.0.0.1:8080/") {
     /* Hits the DELETE relays endpoint of a didery server and returns the result of the
     ensuing promise.
 
@@ -266,7 +265,7 @@ export function deleteRelays(baseURL, uid) {
 
 // ================================================== //
 
-export function getErrors(baseURL) {
+export function getErrors(baseURL="http://127.0.0.1:8080/") {
     /* Hits the GET errors endpoint of a didery server and returns the result of the
     ensuing promise.
 

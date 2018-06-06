@@ -188,7 +188,7 @@ export async function keyInceptionEvent(seed=[], post=true, baseURL="http://127.
         let signature = await signResource(JSON.stringify(body), keypair[0]);
         signature = "signer=\"" + signature + "\"";
         try {
-            let response = await postHistory(baseURL, signature, body);
+            let response = await postHistory(signature, body, baseURL);
             console.log(response);
         }
 
@@ -198,19 +198,20 @@ export async function keyInceptionEvent(seed=[], post=true, baseURL="http://127.
     }
 
     if (save === true) {
+        let key = await toBase64(keypair[0]);
         if (storage.toLowerCase() === "local") {
-            localStorage.setItem("dideryPrivateKey", keypair[0]);
+            localStorage.setItem("dideryPrivateKey", key);
             console.log("Key saved to local storage.");
         }
 
         else if (storage.toLowerCase() === "session") {
-            sessionStorage.setItem("dideryPrivateKey", keypair[0]);
+            sessionStorage.setItem("dideryPrivateKey", key);
             console.log("Key saved to session storage.");
         }
 
         else {
             try {
-                let blob = new Blob([keypair[0]], {type: "text/plain;charset=utf-8"});
+                let blob = new Blob(key, {type: "text/plain;charset=utf-8"});
                 if (storage.endsWith(".txt")) {
                     saveAs(blob, storage);
                     console.log("Key saved to " + storage + ".");
