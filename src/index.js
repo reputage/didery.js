@@ -10,8 +10,6 @@
 // ================================================== //
 
 import {fromBase64, keyInceptionEvent, keyRotationEvent} from "./help";
-import {getHistory} from "./api";
-import {batchGetHistory} from "./batch";
 const m = require('mithril');
 
 // ================================================== //
@@ -200,7 +198,7 @@ m.render(document.body,
                 m("i", {class: "sync alternate icon"}),
                 m("div", "Key Rotation"))),
         m("div[data-tab=incept]", {class: "ui bottom attached tab segment active"},
-            m("div", {class: "ui container"},
+            m("div", {class: "ui container segment"},
                 m("form", {class: "ui form", action: "#", onsubmit: submitInception},
                     m("div", {class: "field"},
                         m("label", "Seed"),
@@ -234,7 +232,7 @@ m.render(document.body,
                         m("label", "URL's"),
                         m("textarea", {id:"incept-urls",
                                        rows: 5,
-                                       placeholder: "URL's (comma separated) ..."})),
+                                       placeholder: "URL's (Comma Separated) ..."})),
                     m("div", {class: "field"},
                         m("div", {class: "ui toggle checkbox"},
                             m("input", {id:"incept-post", type: "checkbox"}),
@@ -277,7 +275,7 @@ m.render(document.body,
                         m("button", {class: "ui button",
                                      type: "submit"}, "Run Key Inception"))))),
         m("div[data-tab=rotate]", {class: "ui bottom attached tab segment"},
-            m("div", {class: "ui container"},
+            m("div", {class: "ui container segment"},
                 m("form", {class: "ui form", action: "#", onsubmit: submitRotation},
                     m("div", {class: "field"},
                         m("label", "Old Private Key *"),
@@ -314,7 +312,7 @@ m.render(document.body,
                         m("label", "URL's"),
                         m("textarea", {id:"rotate-urls",
                                        rows: 5,
-                                       placeholder: "URL's (comma separated) ..."})),
+                                       placeholder: "URL's (Comma Separated) ..."})),
                     m("div", {class: "field"},
                         m("div", {class: "ui toggle checkbox"},
                             m("input", {id:"rotate-post", type: "checkbox"}),
