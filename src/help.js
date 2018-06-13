@@ -374,7 +374,7 @@ export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
         return;
     }
 
-    let history = await getHistory(baseURL, did);
+    let history = await getHistory(urls[0], did);
     let body = history.history;
     if (post === true) {
         let prkSigner = await toBase64(preRotatedKeyPair[1]);
