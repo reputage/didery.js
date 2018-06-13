@@ -38,8 +38,11 @@ export function getHistory(baseURL="http://127.0.0.1:8080/", did="") {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             serverResponse = "No history found.";
         }
-        else {
+        else if(obj.hasOwnProperty("data")) {
             serverResponse = obj.data;
+        }
+        else {
+            serverResponse = obj;
         }
         return serverResponse;
     });
