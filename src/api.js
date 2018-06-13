@@ -20,7 +20,7 @@ export function getHistory(baseURL="http://127.0.0.1:8080/", did="") {
         Parameters:
         baseURL - String of server's base URL
         did - Optional string of did (used to retrieve a single history entry)
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/history";
     if (did !== "") {
         fullURL += "/" + did;
@@ -56,9 +56,10 @@ export function postHistory(signature, data, baseURL="http://127.0.0.1:8080/") {
 
         Parameters:
         baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
+        signature - String of signature for signature header (format of
+        'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
         data - JSON of data to pe posted to server
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/history";
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -78,9 +79,11 @@ export function putHistory(signature, data, did, baseURL="http://127.0.0.1:8080/
 
         Parameters:
         baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
+        signature - String of signature for signature header (format of
+        'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";
+        rotation="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
         data - JSON of data to be posted to server
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/history/" + did;
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -101,7 +104,7 @@ export function getBlobs(baseURL="http://127.0.0.1:8080/", did="") {
         Parameters:
         baseURL - String of server's base URL
         did - Optional string of did (used to retrieve a single history entry)
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/blob";
     if (did !== "") {
         fullURL += "/" + did;
@@ -134,9 +137,10 @@ export function postBlobs(signature, data, baseURL="http://127.0.0.1:8080/") {
 
         Parameters:
         baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
+        signature - String of signature for signature header (format of
+        'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
         data - JSON of data to be posted to server
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/blob";
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -156,10 +160,11 @@ export function putBlobs(signature, data, did, baseURL="http://127.0.0.1:8080/")
 
         Parameters:
         baseURL - String of server's base URL
-        signature - String of signature for signature header (format of 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
+        signature - String of signature for signature header (format of
+        'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="')
         data - JSON of data to be posted to server
         did - String of did of blob to be edited
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/blob/" + did;
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -179,7 +184,7 @@ export function getRelays(baseURL="http://127.0.0.1:8080/") {
 
         Parameters:
         baseURL - String of server's base URL
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/relay";
     let serverResponse = "Could not retrieve server response.";
     return fetch(fullURL).then(response => {
@@ -209,7 +214,7 @@ export function postRelays(data, baseURL="http://127.0.0.1:8080/") {
         Parameters:
         baseURL - String of server's base URL
         data - JSON of data to be posted to server
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/relay";
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -230,7 +235,7 @@ export function putRelays(data, uid, baseURL="http://127.0.0.1:8080/") {
         baseURL - String of server's base URL
         data - JSON of data to be posted to server
         uid - String of uid of relay to be edited
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/relay/" + uid;
     return fetch(fullURL, {
         body: JSON.stringify(data),
@@ -250,7 +255,7 @@ export function deleteRelays(uid, baseURL="http://127.0.0.1:8080/") {
         Parameters:
         baseURL - String of server's base URL
         uid - String of uid of relay to be edited
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/relay/" + uid;
     return fetch(fullURL, {
         method: 'DELETE'
@@ -274,7 +279,7 @@ export function getErrors(baseURL="http://127.0.0.1:8080/") {
 
         Parameters:
         baseURL - String of server's base URL
-     */
+    */
     let fullURL = baseURL.replace(/\/$/, "") + "/errors";
     let serverResponse = "Could not retrieve server response.";
     return fetch(fullURL).then(response => {

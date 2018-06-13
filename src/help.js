@@ -178,7 +178,7 @@ export async function keyInceptionEvent(options={}) {
     input or automatically generated). The first key pair represents the current key
     which can be used to sign documents. The second key pair represents the pre-rotated
     key which will replace the current key on a rotation event. After an inception event
-    there are options to automatically post the key history to a didery server, save the
+    there are options to automatically post the key history to didery servers, save the
     current key (in base64), and show the pre-rotated key(in base64).
 
         Parameters:
@@ -188,13 +188,12 @@ export async function keyInceptionEvent(options={}) {
         preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public key (byte array)
         [private, public]
         post - Optional boolean for posting to server or not
-        baseURL - Optional string of server URL
+        urls - Optional array of server URLs
         save - Optional boolean for saving private key or not
         storage - Optional private key storage location string; Accepted values include "local", "session"
         or "download"
         show - Optional boolean for showing the pre-rotated key or not
     */
-
     let seed = options.seed || [];
     let currentKeyPair = options.currentKeyPair || [];
     let preRotatedKeyPair = options.preRotatedKeyPair || [];
@@ -333,8 +332,11 @@ export async function keyInceptionEvent(options={}) {
 // ================================================== //
 
 export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
-    /* Generates a public private key pair. Optionally, posts it to a didery server
-    and saves the private key in storage.
+    /* Performs a key rotation event. On rotation the previous pre-rotated key becomes the
+    new current key and a new pre-rotated key is produced (either manually input or automatically
+    generated). After an rotation event there are options to automatically update the key history
+    to didery servers, save the new current key (in base64), and show the new pre-rotated
+    key(in base64).
 
         Parameters:
         oldCurrentKey - Byte array of retiring current private key
@@ -344,13 +346,12 @@ export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
         preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public key (byte array)
         [private, public]
         post - Optional boolean for posting to server or not
-        baseURL - Optional string of server URL
+        urls - Optional array of server URLs
         save - Optional boolean for saving new private key or not
         storage - Optional private key storage location string; Accepted values include "local", "session"
         or "download"
         show - Optional boolean for showing the pre-rotated key or not
     */
-
     let seed = options.seed || [];
     let preRotatedKeyPair = options.preRotatedKeyPair || [];
     let post = options.post || false;
