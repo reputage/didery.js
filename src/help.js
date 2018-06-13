@@ -1,10 +1,10 @@
 // ================================================== //
-//                      HELPING                       //
+//                        HELP                        //
 // ================================================== //
 // Author: Brady Hammond                              //
 // Created: 05/25/2018                                //
-// Last Edited:                                       //
-// Last Edited By:                                    //
+// Last Edited: 06/12/2018                            //
+// Last Edited By: Brady Hammond                      //
 // ================================================== //
 //                     IMPORTS                        //
 // ================================================== //
@@ -12,6 +12,7 @@
 import {getHistory, postHistory, putHistory} from "./api";
 const _sodium = require('libsodium-wrappers');
 const moment = require('moment');
+const fileSaver = require('file-saver');
 const m = require('mithril');
 
 // ================================================== //
@@ -172,14 +173,7 @@ export async function fromBase64(key64u, padding=true) {
 
 // ================================================== //
 
-export async function keyInceptionEvent(seed=[],
-                                        currentKeyPair=[],
-                                        preRotatedKeyPair=[],
-                                        post=true,
-                                        baseURL="http://127.0.0.1:8080/",
-                                        save=true,
-                                        storage="local",
-                                        show=true) {
+export async function keyInceptionEvent(options={}) {
     /* Performs a key inception event. On inception two keys pairs are given (either manually
     input or automatically generated). The first key pair represents the current key
     which can be used to sign documents. The second key pair represents the pre-rotated
@@ -197,9 +191,18 @@ export async function keyInceptionEvent(seed=[],
         baseURL - Optional string of server URL
         save - Optional boolean for saving private key or not
         storage - Optional private key storage location string; Accepted values include "local", "session"
-        or a file path
+        or "download"
         show - Optional boolean for showing the pre-rotated key or not
     */
+
+    let seed = options.seed || [];
+    let currentKeyPair = options.currentKeyPair || [];
+    let preRotatedKeyPair = options.preRotatedKeyPair || [];
+    let post = options.post || false;
+    let urls = options.urls || ["http://127.0.0.1:8080/"];
+    let save = options.save || false;
+    let storage = options.storage || "local";
+    let show = options.show || false;
 
     if ((currentKeyPair === undefined || currentKeyPair.length === 0) &&
         (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
@@ -232,7 +235,7 @@ export async function keyInceptionEvent(seed=[],
         return;
     }
 
-    else if ((currentKeyPair[1] instanceof Uint8Array !== true || currentKeyPair[0].length !== 32)) {
+    else if ((currentKeyPair[1] instanceof Uint8Array !== true || currentKeyPair[1].length !== 32)) {
         console.log("Invalid key pairs: The current public key must be a byte array of length 32.");
         return;
     }
@@ -242,7 +245,7 @@ export async function keyInceptionEvent(seed=[],
         return;
     }
 
-    else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 32)) {
+    else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[1].length !== 32)) {
         console.log("Invalid key pairs: The pre-rotated public key must be a byte array of length 32.");
         return;
     }
@@ -260,14 +263,17 @@ export async function keyInceptionEvent(seed=[],
 
         let signature = await signResource(JSON.stringify(body), currentKeyPair[0]);
         signature = "signer=\"" + signature + "\"";
-        try {
-            let response = await postHistory(signature, body, baseURL);
-            console.log(response);
-        }
 
-        catch (error) {
-            console.log("Could not post to server: " + error + ".");
-        }
+        urls.forEach(async(url) => {
+            try {
+                let response = await postHistory(signature, body, url);
+                console.log(response);
+            }
+
+            catch (error) {
+                console.log("Could not post to server: " + error + ".");
+            }
+        });
     }
 
     if (save === true) {
@@ -282,30 +288,20 @@ export async function keyInceptionEvent(seed=[],
             console.log("Key saved to session storage.");
         }
 
-        else {
+        else if (storage.toLowerCase() === "download") {
             try {
-                let blob = new Blob(key, {type: "text/plain;charset=utf-8"});
-                if (storage.endsWith(".txt")) {
-                    saveAs(blob, storage);
-                    console.log("Key saved to " + storage + ".");
-                }
-
-                else if (storage.endsWith("/")) {
-                    storage = storage + "dideryPrivateKey.txt";
-                    saveAs(blob, storage);
-                    console.log("Key saved to " + storage + ".");
-                }
-
-                else {
-                    storage = storage + "/dideryPrivateKey.txt";
-                    saveAs(blob, storage + "/dideryPrivateKey.txt");
-                    console.log("Key saved to " + storage + ".");
-                }
+                let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
+                fileSaver.saveAs(blob, "dideryPrivateKey.txt");
+                console.log("Key saved to downloaded file dideryPrivateKey.txt");
             }
             
             catch (error) {
-                console.log("Could not save key to local file: " + error + ".");
+                console.log("Could not download key file: " + error + ".");
             }
+        }
+
+        else {
+            console.log("Invalid storage location.")
         }
     }
 
@@ -315,16 +311,17 @@ export async function keyInceptionEvent(seed=[],
             m("div", {class: "ui tiny modal"},
                 m("div", {class: "ui header"}, "Pre-Rotated Key"),
                 m("div", {class: "content"},
-                    m("p", "Please save this pre-rotated key in a secure location:"),
-                    m("p", {style: "word-wrap: break-word"},
-                        m("b", pkey))),
+                    m("div", {class: "container"},
+                        m("p", "Please save this pre-rotated key in a secure location:"),
+                        m("p", {style: "word-wrap: break-word"},
+                            m("b", pkey)))),
                 m("div", {class: "actions"},
                     m("div", {class: "ui green ok button"}, "OK"))));
 
         $('.ui.tiny.modal').modal({
             // Removes key from DOM
             onHide: function(){
-                $('.content').remove();
+                $('.container').remove();
 
             }
         }).modal('show');
@@ -335,16 +332,7 @@ export async function keyInceptionEvent(seed=[],
 
 // ================================================== //
 
-export async function keyRotationEvent(retiringKey,
-                                       newKey,
-                                       did,
-                                       seed=[],
-                                       preRotatedKeyPair=[],
-                                       post=true,
-                                       baseURL="http://127.0.0.1:8080/",
-                                       save=true,
-                                       storage="local",
-                                       show=true) {
+export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
     /* Generates a public private key pair. Optionally, posts it to a didery server
     and saves the private key in storage.
 
@@ -359,9 +347,17 @@ export async function keyRotationEvent(retiringKey,
         baseURL - Optional string of server URL
         save - Optional boolean for saving new private key or not
         storage - Optional private key storage location string; Accepted values include "local", "session"
-        or a file path
+        or "download"
         show - Optional boolean for showing the pre-rotated key or not
     */
+
+    let seed = options.seed || [];
+    let preRotatedKeyPair = options.preRotatedKeyPair || [];
+    let post = options.post || false;
+    let urls = options.urls || ["http://127.0.0.1:8080/"];
+    let save = options.save || false;
+    let storage = options.storage || "local";
+    let show = options.show || false;
 
     if (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0) {
         preRotatedKeyPair = await generateKeyPair(seed);
@@ -388,14 +384,17 @@ export async function keyRotationEvent(retiringKey,
         let oldSignature = await signResource(JSON.stringify(body), retiringKey);
         let newSignature = await signResource(JSON.stringify(body), newKey);
         let signature = "signer=\"" + newSignature + "\"; rotation=\"" + oldSignature + "\"";
-        try {
-            let response = await putHistory(signature, body, did, baseURL);
-            console.log(response);
-        }
 
-        catch (error) {
-            console.log("Could not post to server: " + error + ".");
-        }
+        urls.forEach(async(url) => {
+            try {
+                let response = await putHistory(signature, body, did, url);
+                console.log(response);
+            }
+
+            catch (error) {
+                console.log("Could not post to server: " + error + ".");
+            }
+        });
     }
 
     if (save === true) {
@@ -410,30 +409,20 @@ export async function keyRotationEvent(retiringKey,
             console.log("Key saved to session storage.");
         }
 
-        else {
+        else if (storage.toLowerCase() === "download") {
             try {
-                let blob = new Blob(key, {type: "text/plain;charset=utf-8"});
-                if (storage.endsWith(".txt")) {
-                    saveAs(blob, storage);
-                    console.log("Key saved to " + storage + ".");
-                }
-
-                else if (storage.endsWith("/")) {
-                    storage = storage + "dideryPrivateKey.txt";
-                    saveAs(blob, storage);
-                    console.log("Key saved to " + storage + ".");
-                }
-
-                else {
-                    storage = storage + "/dideryPrivateKey.txt";
-                    saveAs(blob, storage + "/dideryPrivateKey.txt");
-                    console.log("Key saved to " + storage + ".");
-                }
+                let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
+                fileSaver.saveAs(blob, "dideryPrivateKey.txt");
+                console.log("Key saved to downloaded file dideryPrivateKey.txt");
             }
 
             catch (error) {
-                console.log("Could not save key to local file: " + error + ".");
+                console.log("Could not download key file: " + error + ".");
             }
+        }
+
+        else {
+            console.log("Invalid storage location.")
         }
     }
 
@@ -443,16 +432,17 @@ export async function keyRotationEvent(retiringKey,
             m("div", {class: "ui tiny modal"},
                 m("div", {class: "ui header"}, "New Pre-Rotated Key"),
                 m("div", {class: "content"},
-                    m("p", "Please save this new pre-rotated key in a secure location:"),
-                    m("p", {style: "word-wrap: break-word"},
-                        m("b", pkey))),
+                    m("div", {class: "container"},
+                        m("p", "Please save this new pre-rotated key in a secure location:"),
+                        m("p", {style: "word-wrap: break-word"},
+                            m("b", pkey)))),
                 m("div", {class: "actions"},
                     m("div", {class: "ui green ok button"}, "OK"))));
 
         $('.ui.tiny.modal').modal({
             // Removes key from DOM
             onHide: function(){
-                $('.content').remove();
+                $('.container').remove();
 
             }
         }).modal('show');
