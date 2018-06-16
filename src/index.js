@@ -13,47 +13,79 @@ import {fromBase64, keyInceptionEvent, keyRotationEvent} from "./help";
 const m = require('mithril');
 
 // ================================================== //
-//                       MAIN                         //
+//                     FUNCTIONS                      //
 // ================================================== //
 
 let submitInception = async function(e) {
     e.preventDefault();
-    let seed = $('#incept-seed').val();
+    let currentSeed = $('#incept-current-seed').val();
+    let preRotated = $('#incept-pre-rotated-seed').val();
     let currentPrivateKey = $('#incept-current-private-key').val();
     let currentPublicKey = $('#incept-current-public-key').val();
     let preRotatedPrivateKey = $('#incept-pre-rotated-private-key').val();
     let preRotatedPublicKey = $('#incept-pre-rotated-public-key').val();
     let urls = $('#incept-urls').val();
     let post = $('#incept-post').prop('checked');
-    let save = $('#incept-save').prop('checked');
-    let show = $('#incept-show').prop('checked');
+    let saveCurrent = $('#incept-save-current').prop('checked');
+    let savePreRotated = $('#incept-save-pre-rotated').prop('checked');
+    let showCurrent = $('#incept-show-current').prop('checked');
+    let showPreRotated = $('#incept-show-pre-rotated').prop('checked');
 
-    let storage = "";
-    if ($('#incept-local').prop('checked')) {
-        storage = "local"
+    let storageCurrent = "";
+    if ($('#incept-local-current').prop('checked')) {
+        storageCurrent = "local"
     }
-    else if ($('#incept-session').prop('checked')) {
-        storage = "session";
+    else if ($('#incept-session-current').prop('checked')) {
+        storageCurrent = "session";
     }
-    else if ($('#incept-download').prop('checked')) {
-        storage = "download";
+    else if ($('#incept-download-current').prop('checked')) {
+        storageCurrent = "download";
     }
     else {
-        storage = "";
+        storageCurrent = "";
     }
 
-    if (save === true && storage === "") {
+    if (saveCurrent === true && storageCurrent === "") {
+        console.log("No Storage Specified.");
+        return;
+    }
+
+    let storagePreRotated = "";
+    if ($('#incept-local-current').prop('checked')) {
+        storagePreRotated = "local"
+    }
+    else if ($('#incept-session-current').prop('checked')) {
+        storagePreRotated = "session";
+    }
+    else if ($('#incept-download-current').prop('checked')) {
+        storagePreRotated = "download";
+    }
+    else {
+        storagePreRotated = "";
+    }
+
+    if (savePreRotated === true && storagePreRotated === "") {
         console.log("No Storage Specified.");
         return;
     }
 
     let options = {};
-    if (seed !== '') {
+    if (currentSeed !== '') {
         try {
-            options.seed = await fromBase64(seed);
+            options.currentSeed = await fromBase64(currentSeed);
         }
-        catch (err) {
-            console.log("Invalid Key: " + err + ".");
+        catch (error) {
+            console.log("Invalid Key: " + error + ".");
+            return;
+        }
+    }
+
+    if (preRotated !== '') {
+        try {
+            options.preRotated = await fromBase64(preRotated);
+        }
+        catch (error) {
+            console.log("Invalid Key: " + error + ".");
             return;
         }
     }
@@ -65,8 +97,8 @@ let submitInception = async function(e) {
             keyPair.push(await fromBase64(currentPublicKey));
             options.currentKeyPair = keyPair;
         }
-        catch (err) {
-            console.log("Invalid Current Key: " + err + ".");
+        catch (error) {
+            console.log("Invalid Current Key: " + error + ".");
             return;
         }
     }
@@ -84,8 +116,8 @@ let submitInception = async function(e) {
             keyPair.push(await fromBase64(preRotatedPublicKey));
             options.preRotatedKeyPair = keyPair;
         }
-        catch (err) {
-            console.log("Invalid Current Key: " + err + ".");
+        catch (error) {
+            console.log("Invalid Current Key: " + error + ".");
             return;
         }
     }
@@ -100,16 +132,24 @@ let submitInception = async function(e) {
         options.urls = urls.split(',');
     }
 
-    if (storage !== "") {
-        options.storage = storage;
+    if (storageCurrent !== "") {
+        options.storageCurrent = storageCurrent;
+    }
+
+    if (storagePreRotated !== "") {
+        options.storagePreRotated = storagePreRotated;
     }
 
     options.post = post;
-    options.save = save;
-    options.show = show;
+    options.saveCurrent = saveCurrent;
+    options.savePreRotated = savePreRotated;
+    options.showCurrent = showCurrent;
+    options.showPreRotated = showPreRotated;
 
     keyInceptionEvent(options);
 };
+
+// ================================================== //
 
 let submitRotation = async function(e) {
     e.preventDefault();
@@ -148,8 +188,8 @@ let submitRotation = async function(e) {
         try {
             options.seed = await fromBase64(seed);
         }
-        catch (err) {
-            console.log("Invalid Key: " + err + ".");
+        catch (error) {
+            console.log("Invalid Key: " + error + ".");
             return;
         }
     }
@@ -185,8 +225,12 @@ let submitRotation = async function(e) {
     options.save = save;
     options.show = show;
 
+
     keyRotationEvent(oldKey, newKey, did, options);
 };
+// ================================================== //
+//                       MAIN                         //
+// ================================================== //
 
 m.render(document.body,
     m("div", {class: "ui container"},
@@ -201,12 +245,31 @@ m.render(document.body,
             m("div", {class: "ui container segment"},
                 m("form", {class: "ui form", action: "#", onsubmit: submitInception},
                     m("div", {class: "field"},
-                        m("label", "Seed"),
-                        m("input", {id: "incept-seed",
+                        m("label", "Current Seed ",
+                            m("span[data-content=This is an optional base64 encoded seed string. If provided it will be " +
+                                "used to generate the key pair for your current key.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i",
+                                    {class: "icon question circle outline"}))),
+                        m("input", {id: "incept-current-seed",
                                     type: "text",
                                     placeholder: "Base64 Encoded Seed ..."})),
+                        m("div", {class: "field"},
+                            m("label", "Pre-rotated Seed ",
+                                m("span[data-content=This is an optional base64 encoded seed string. If provided it will " +
+                                    "be used to generate the key pair for your pre-rotated key.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                    m("i",
+                                    {class: "icon question circle outline"}))),
+                            m("input", {id: "incept-pre-rotated-seed",
+                                type: "text",
+                                placeholder: "Base64 Encoded Seed ..."})),
                     m("div", {class: "field"},
-                        m("label", "Current Key Pair"),
+                        m("label", "Current Key Pair ",
+                            m("span[data-content=These are optional base64 encoded key strings. The first field is a " +
+                                "for a 64 bit private key, and the second field is for a 32 bit public key. If both " +
+                                "keys are provided, the key pair will be used as your current key pair. If used, both " +
+                                "keys must be provided.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i",
+                                    {class: "icon question circle outline"}))),
                         m("div", {class: "two fields"},
                             m("div", {class: "field"},
                                 m("input", {id: "incept-current-private-key",
@@ -218,7 +281,13 @@ m.render(document.body,
                                             placeholder: "Base64 Encoded Public Key ..."})
                             ))),
                     m("div", {class: "field"},
-                        m("label", "Pre-rotated Key Pair"),
+                        m("label", "Pre-rotated Key Pair ",
+                            m("span[data-content=These are optional base64 encoded key strings. The first field is a " +
+                                "for a 64 bit private key, and the second field is for a 32 bit public key. If both " +
+                                "keys are provided, the key pair will be used as your pre-rotated key pair. If used, both " +
+                                "keys must be provided.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i",
+                                    {class: "icon question circle outline"}))),
                         m("div", {class: "two fields"},
                             m("div", {class: "field"},
                                 m("input", {id: "incept-pre-rotated-private-key",
@@ -229,51 +298,129 @@ m.render(document.body,
                                             type: "text",
                                             placeholder: "Base64 Encoded Public Key ..."})))),
                     m("div", {class: "field"},
-                        m("label", "URL's"),
+                        m("label", "URL's ",
+                            m("span[data-content=This is an optional list of comma separated urls. If you select the post " +
+                                "option, your key history will be posted to each url in this list.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i",
+                                    {class: "icon question circle outline"}))),
                         m("textarea", {id:"incept-urls",
                                        rows: 5,
                                        placeholder: "URL's (Comma Separated) ..."})),
-                    m("div", {class: "field"},
-                        m("div", {class: "ui toggle checkbox"},
-                            m("input", {id:"incept-post", type: "checkbox"}),
-                            m("label", "Post Data"))),
-                    m("div", {class: "field"},
-                        m("div", {class: "ui toggle checkbox"},
-                            m("input", {id:"incept-show", type: "checkbox"}),
-                            m("label", "Show Pre-rotated Private Key"))),
-                    m("div", {class: "field"},
-                        m("div", {class: "ui toggle checkbox"},
-                            m("input", {id:"incept-save", type: "checkbox"}),
-                            m("label", "Save Current Private Key"))),
-                    m("div", {class: "grouped fields"},
-                        m("label", "Save Location"),
-                        m("div", {class: "field"},
-                            m("div", {class: "ui radio checkbox"},
-                                m("input", {id: "incept-local",
-                                            type: "radio",
-                                            name: "storage",
-                                            value: "local",
+                    m("div", {class: "ui segment"},
+                        m("div", {class: "ui two column stackable grid"},
+                            m("div", {class: "column"},
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-post", type: "checkbox"}),
+                                        m("label", "Post Data ",
+                                            m("span[data-content=Option to post your newly generated key history to one or more servers.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i",
+                                                    {class: "icon question circle outline"}))))),
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-show-current", type: "checkbox"}),
+                                        m("label", "Show Current Private Key ",
+                                            m("span[data-content=Option to show your newly generated current key.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i",
+                                                    {class: "icon question circle outline"}))))),
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-save-current", type: "checkbox"}),
+                                        m("label", "Save Current Private Key ",
+                                            m("span[data-content=Option to save your current private key in one of the formats below. " +
+                                                "Local storage saves your key to your browser's persistent storage. Session storage " +
+                                                "saves your key to your browser's temporary storage (erased when the browser is " +
+                                                "closed). Download saves your key in a .txt file and downloads it onto your local " +
+                                                "machine.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i",
+                                                    {class: "icon question circle outline"})))))),
+
+                            m("div", {class: "column"},
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-show-pre-rotated", type: "checkbox"}),
+                                        m("label", "Show Pre-rotated Private Key ",
+                                            m("span[data-content=Option to show your newly generated pre-rotated key.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i",
+                                                    {class: "icon question circle outline"}))))),
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-save-pre-rotated", type: "checkbox"}),
+                                        m("label", "Save Pre-rotated Private Key ",
+                                            m("span[data-content=Option to save your pre-rotated private key in one of the formats below. " +
+                                                "Local storage saves your key to your browser's persistent storage. Session storage " +
+                                                "saves your key to your browser's temporary storage (erased when the browser is " +
+                                                "closed). Download saves your key in a .txt file and downloads it onto your local " +
+                                                "machine.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i",
+                                                    {class: "icon question circle outline"})))))))),
+                        m("div", {class: "ui segment"},
+                        m("div", {class: "ui two column stackable grid"},
+                            m("div", {class: "column"},
+                                m("div", {class: "grouped fields"},
+                                    m("label", "Pre-Rotated Save Location"),
+                                    m("div", {class: "field"},
+                                        m("div", {class: "ui radio checkbox"},
+                                            m("input", {id: "incept-local-pre-rotated",
+                                                type: "radio",
+                                                name: "storage",
+                                                value: "local",
                                             }),
-                                m("label", "Local Storage"))),
-                        m("div", {class: "field"},
-                            m("div", {class: "ui radio checkbox"},
-                                m("input", {id:"incept-session",
-                                            type: "radio",
-                                            name: "storage",
-                                            value: "session",
+                                            m("label", "Local Storage"))),
+                                    m("div", {class: "field"},
+                                        m("div", {class: "ui radio checkbox"},
+                                            m("input", {id:"incept-session-pre-rotated",
+                                                type: "radio",
+                                                name: "storage",
+                                                value: "session",
                                             }),
-                                m("label", "Session Storage"))),
-                        m("div", {class: "field"},
-                            m("div", {class: "ui radio checkbox"},
-                                m("input", {id:"incept-download",
-                                            type: "radio",
-                                            name: "storage",
-                                            value: "download",
+                                            m("label", "Session Storage"))),
+                                    m("div", {class: "field"},
+                                        m("div", {class: "ui radio checkbox"},
+                                            m("input", {id:"incept-download-pre-rotated",
+                                                type: "radio",
+                                                name: "storage",
+                                                value: "download",
                                             }),
-                                m("label", "Download")))),
-                    m("div", {class: "ui center aligned vertical segment"},
-                        m("button", {class: "ui button",
-                                     type: "submit"}, "Run Key Inception"))))),
+                                            m("label", "Download"))))),
+                            m("div", {class: "column"},
+                                m("div", {class: "grouped fields"},
+                                    m("label", "Current Save Location"),
+                                    m("div", {class: "field"},
+                                        m("div", {class: "ui radio checkbox"},
+                                            m("input", {id: "incept-local-current",
+                                                type: "radio",
+                                                name: "storage",
+                                                value: "local",
+                                            }),
+                                            m("label", "Local Storage"))),
+                                    m("div", {class: "field"},
+                                        m("div", {class: "ui radio checkbox"},
+                                            m("input", {id:"incept-session-current",
+                                                type: "radio",
+                                                name: "storage",
+                                                value: "session",
+                                            }),
+                                            m("label", "Session Storage"))),
+                                    m("div", {class: "field"},
+                                        m("div", {class: "ui radio checkbox"},
+                                            m("input", {id:"incept-download-current",
+                                                type: "radio",
+                                                name: "storage",
+                                                value: "download",
+                                            }),
+                                            m("label", "Download"))))))),
+                            m("div", {class: "ui center aligned vertical segment"},
+                                m("button", {class: "ui button",
+                                             type: "submit"}, "Run Key Inception"))),
+                m("div", {id: "incept-success", class: "ui positive message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Inception Success"),
+                    m("p", {id: "incept-success-message"}, "Your new keys have successfully been created.")),
+                m("div", {id: "incept-success", class: "ui negative message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Inception Failure"),
+                    m("p", {id: "incept-fail-message"})))),
         m("div[data-tab=rotate]", {class: "ui bottom attached tab segment"},
             m("div", {class: "ui container segment"},
                 m("form", {class: "ui form", action: "#", onsubmit: submitRotation},
@@ -353,10 +500,23 @@ m.render(document.body,
                                 m("label", "Download")))),
                     m("div", {class: "ui center aligned vertical segment"},
                         m("button", {class: "ui button",
-                            type: "submit"}, "Run Key Rotation")))))));
+                            type: "submit"}, "Run Key Rotation"))),
+                m("div", {id: "rotate-success", class: "ui positive message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Inception Success"),
+                    m("p", {id: "rotate-success-message"}, "Your new keys have successfully been created.")),
+                m("div", {id: "rotate-success", class: "ui negative message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Inception Failure"),
+                    m("p", {id: "rotate-fail-message"}))))));
 
+// ================================================== //
 
 $(".menu .item").tab();
+$(".close.icon").click(function () {
+    $(this).parent().addClass("hidden");
+});
+$(".popup").popup();
 
 // ================================================== //
 //                        EOF                         //
