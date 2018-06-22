@@ -32,8 +32,6 @@ export function getHistory(baseURL="http://127.0.0.1:8080/", did="") {
             return response.json();
         }
         throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
     }).then(function(obj) {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             serverResponse = "No history found.";
@@ -45,6 +43,10 @@ export function getHistory(baseURL="http://127.0.0.1:8080/", did="") {
             serverResponse = obj;
         }
         return serverResponse;
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
     });
 }
 
@@ -68,7 +70,16 @@ export function postHistory(signature, data, baseURL="http://127.0.0.1:8080/") {
             'content-type': 'application/json'
         },
         method: 'POST'
-    }).then(response => response.json());
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
 }
 
 // ================================================== //
@@ -92,7 +103,16 @@ export function putHistory(signature, data, did, baseURL="http://127.0.0.1:8080/
             'content-type': 'application/json'
         },
         method: 'PUT'
-    }).then(response => response.json());
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
 }
 
 // ================================================== //
@@ -116,8 +136,6 @@ export function getBlobs(baseURL="http://127.0.0.1:8080/", did="") {
             return response.json();
         }
         throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
     }).then(function(obj) {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             serverResponse = "No blobs found.";
@@ -126,6 +144,10 @@ export function getBlobs(baseURL="http://127.0.0.1:8080/", did="") {
             serverResponse = obj;
         }
         return serverResponse;
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
     });
 }
 
@@ -149,7 +171,16 @@ export function postBlobs(signature, data, baseURL="http://127.0.0.1:8080/") {
             'content-type': 'application/json'
         },
         method: 'POST'
-    }).then(response => response.json());
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
 }
 
 // ================================================== //
@@ -173,7 +204,16 @@ export function putBlobs(signature, data, did, baseURL="http://127.0.0.1:8080/")
             'content-type': 'application/json'
         },
         method: 'PUT'
-    }).then(response => response.json());
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
 }
 
 // ================================================== //
@@ -192,8 +232,6 @@ export function getRelays(baseURL="http://127.0.0.1:8080/") {
             return response.json();
         }
         throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
     }).then(function(obj) {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             serverResponse = "No relays found.";
@@ -202,6 +240,10 @@ export function getRelays(baseURL="http://127.0.0.1:8080/") {
             serverResponse = obj;
         }
         return serverResponse;
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
     });
 }
 
@@ -222,7 +264,16 @@ export function postRelays(data, baseURL="http://127.0.0.1:8080/") {
             'content-type': 'application/json'
         },
         method: 'POST'
-    }).then(response => response.json());
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
 }
 
 // ================================================== //
@@ -243,7 +294,16 @@ export function putRelays(data, uid, baseURL="http://127.0.0.1:8080/") {
             'content-type': 'application/json'
         },
         method: 'PUT'
-    }).then(response => response.json());
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
 }
 
 // ================================================== //
@@ -264,10 +324,12 @@ export function deleteRelays(uid, baseURL="http://127.0.0.1:8080/") {
             return response.json();
         }
         throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
     }).then(function(obj) {
         return obj;
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
     });
 }
 
@@ -287,8 +349,6 @@ export function getErrors(baseURL="http://127.0.0.1:8080/") {
             return response.json();
         }
         throw new Error('Network response was not ok.');
-    }).catch(function(error) {
-        console.log('There has been a problem with a fetch operation: ', error.message);
     }).then(function(obj) {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             serverResponse = "No errors found.";
@@ -297,6 +357,10 @@ export function getErrors(baseURL="http://127.0.0.1:8080/") {
             serverResponse = obj.data;
         }
         return serverResponse;
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
     });
 }
 

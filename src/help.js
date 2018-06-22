@@ -10,7 +10,7 @@
 // ================================================== //
 
 import {getHistory, putHistory} from "./api";
-import {batchPostHistory} from "./batch";
+import {batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
 const moment = require('moment');
 const fileSaver = require('file-saver');
@@ -193,7 +193,7 @@ export async function keyInceptionEvent(options={}) {
         urls - Optional array of server URLs
         saveCurrent - Optional boolean for saving current private key or not
         savePreRotated - Optional boolean for saving pre-rotated private key or not
-        currentStorage - Optional current private key storage location string; Accepted values include "local",
+        storageCurrent - Optional current private key storage location string; Accepted values include "local",
         "session" or "download"
         preRotatedStorage - Optional pre-rotated private key storage location string; Accepted values include "local",
         "session" or "download"
@@ -208,8 +208,8 @@ export async function keyInceptionEvent(options={}) {
     let urls = options.urls || ["http://127.0.0.1:8080/"];
     let saveCurrent = options.saveCurrent || false;
     let savePreRotated = options.savePreRotated || false;
-    let currentStorage = options.currentStorage || "local";
-    let preRotatedStorage = options.preRotatedStorage || "local";
+    let storageCurrent = options.storageCurrent || "local";
+    let storagePreRotated = options.storagePreRotated || "local";
     let showCurrent = options.showCurrent || false;
     let showPreRotated = options.showPreRotated || false;
 
@@ -221,41 +221,41 @@ export async function keyInceptionEvent(options={}) {
 
     else if (!(currentKeyPair === undefined || currentKeyPair.length === 0) &&
         (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
-        console.log("Missing Current Key Pair: Either supply both a current key pair and a pre-rotated key pair " +
+        console.error("Missing Current Key Pair: Either supply both a current key pair and a pre-rotated key pair " +
                     "or supply neither to generate new keys.");
         return;
     }
 
     else if ((currentKeyPair === undefined || currentKeyPair.length === 0) &&
         !(preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
-        console.log("Missing Pre-rotated Key Pair: Either supply both a current key pair and a pre-rotated key pair " +
+        console.error("Missing Pre-rotated Key Pair: Either supply both a current key pair and a pre-rotated key pair " +
             "or supply neither to generate new keys.");
         return;
     }
 
     else if ((currentKeyPair.length !== 2 || preRotatedKeyPair.length !== 2)) {
-        console.log("Invalid Key Pairs: A key pair must be an array with the both the private and public keys. They " +
+        console.error("Invalid Key Pairs: A key pair must be an array with the both the private and public keys. They " +
                     "follow the format [private key, public key].");
         return ;
     }
 
     else if ((currentKeyPair[0] instanceof Uint8Array !== true || currentKeyPair[0].length !== 64)) {
-        console.log("Invalid Key Pairs: The current private key must be a byte array of length 64.");
+        console.error("Invalid Key Pairs: The current private key must be a byte array of length 64.");
         return;
     }
 
     else if ((currentKeyPair[1] instanceof Uint8Array !== true || currentKeyPair[1].length !== 32)) {
-        console.log("Invalid Key Pairs: The current public key must be a byte array of length 32.");
+        console.error("Invalid Key Pairs: The current public key must be a byte array of length 32.");
         return;
     }
 
     else if ((preRotatedKeyPair[0] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 64)) {
-        console.log("Invalid Key Pairs: The pre-rotated private key must be a byte array of length 64.");
+        console.error("Invalid Key Pairs: The pre-rotated private key must be a byte array of length 64.");
         return;
     }
 
     else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[1].length !== 32)) {
-        console.log("Invalid Key Pairs: The pre-rotated public key must be a byte array of length 32.");
+        console.error("Invalid Key Pairs: The pre-rotated public key must be a byte array of length 32.");
         return;
     }
 
@@ -273,27 +273,27 @@ export async function keyInceptionEvent(options={}) {
         let signature = await signResource(JSON.stringify(body), currentKeyPair[0]);
         signature = "signer=\"" + signature + "\"";
 
-        try {
-            batchPostHistory(signature, body, urls);
-        }
-        catch (error) {
-            console.log("Could Not Post to Server: " + error + ".");
-        }
+        await batchPostHistory(signature, body, urls).then(function (response) {
+            console.log(response);
+        }).catch(function (error) {
+            console.error(error);
+            throw error;
+        });
     }
 
     if (saveCurrent === true) {
         let key = await toBase64(currentKeyPair[0]);
-        if (currentStorage.toLowerCase() === "local") {
+        if (storageCurrent.toLowerCase() === "local") {
             localStorage.setItem("CurrentPrivateKey", key);
             console.log("Key saved to local storage.");
         }
 
-        else if (currentStorage.toLowerCase() === "session") {
+        else if (storageCurrent.toLowerCase() === "session") {
             sessionStorage.setItem("CurrentPrivateKey", key);
             console.log("Key saved to session storage.");
         }
 
-        else if (currentStorage.toLowerCase() === "download") {
+        else if (storageCurrent.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "CurrentPrivateKey.txt");
@@ -301,28 +301,30 @@ export async function keyInceptionEvent(options={}) {
             }
 
             catch (error) {
-                console.log("Could Not Download Key File: " + error + ".");
+                console.error("Could Not Download Key File: " + error + ".");
+                throw "Could Not Download Key File: " + error + ".";
             }
         }
 
         else {
-            console.log("Invalid Storage Location.");
+            console.error("Invalid Storage Location.");
+            throw "Invalid Storage Location"
         }
     }
 
     if (savePreRotated === true) {
         let key = await toBase64(preRotatedKeyPair[0]);
-        if (preRotatedStorage.toLowerCase() === "local") {
+        if (storagePreRotated.toLowerCase() === "local") {
             localStorage.setItem("PreRotatedPrivateKey", key);
             console.log("Key saved to local storage.");
         }
 
-        else if (preRotatedStorage.toLowerCase() === "session") {
+        else if (storagePreRotated.toLowerCase() === "session") {
             sessionStorage.setItem("PreRotatedPrivateKey", key);
             console.log("Key saved to session storage.");
         }
 
-        else if (preRotatedStorage.toLowerCase() === "download") {
+        else if (storagePreRotated.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "PreRotatedPrivateKey.txt");
@@ -330,12 +332,14 @@ export async function keyInceptionEvent(options={}) {
             }
 
             catch (error) {
-                console.log("Could Not Download Key File: " + error + ".");
+                console.error("Could Not Download Key File: " + error + ".");
+                throw "Could Not Download Key File: " + error + "."
             }
         }
 
         else {
-            console.log("Invalid Storage Location.");
+            console.error("Invalid Storage Location.");
+            throw "Invalid Storage Location."
         }
     }
 
@@ -373,7 +377,7 @@ export async function keyInceptionEvent(options={}) {
 
 // ================================================== //
 
-export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
+export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, options={}) {
     /* Performs a key rotation event. On rotation the previous pre-rotated key becomes the
     new current key and a new pre-rotated key is produced (either manually input or automatically
     generated). After an rotation event there are options to automatically update the key history
@@ -389,30 +393,37 @@ export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
         [private, public]
         post - Optional boolean for posting to server or not
         urls - Optional array of server URLs
-        save - Optional boolean for saving new private key or not
-        storage - Optional private key storage location string; Accepted values include "local", "session"
-        or "download"
-        show - Optional boolean for showing the pre-rotated key or not
+        saveCurrent - Optional boolean for saving current private key or not
+        savePreRotated - Optional boolean for saving pre-rotated private key or not
+        storageCurrent - Optional current private key storage location string; Accepted values include "local",
+        "session" or "download"
+        storagePreRotated - Optional pre-rotated private key storage location string; Accepted values include "local",
+        "session" or "download"
+        showCurrent - Optional boolean for showing the current key or not
+        showPreRotated - Optional boolean for showing the pre-rotated key or not
     */
     let seed = options.seed || [];
     let preRotatedKeyPair = options.preRotatedKeyPair || [];
     let post = options.post || false;
     let urls = options.urls || ["http://127.0.0.1:8080/"];
-    let save = options.save || false;
-    let storage = options.storage || "local";
-    let show = options.show || false;
+    let saveCurrent = options.saveCurrent || false;
+    let savePreRotated = options.savePreRotated || false;
+    let storageCurrent = options.storageCurrent || "local";
+    let storagePreRotated = options.storagePreRotated || "local";
+    let showCurrent = options.showCurrent || false;
+    let showPreRotated = options.showPreRotated || false;
 
     if (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0) {
         preRotatedKeyPair = await generateKeyPair(seed);
     }
 
     else if ((preRotatedKeyPair[0] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 64)) {
-        console.log("Invalid Key Pairs: The pre-rotated private key must be a byte array of length 64.");
+        console.error("Invalid Key Pairs: The pre-rotated private key must be a byte array of length 64.");
         return;
     }
 
     else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 32)) {
-        console.log("Invalid Key Pairs: The pre-rotated public key must be a byte array of length 32.");
+        console.error("Invalid Key Pairs: The pre-rotated public key must be a byte array of length 32.");
         return;
     }
 
@@ -424,59 +435,89 @@ export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
         body.signer += 1;
         body.signers.push(prkSigner);
 
-        let oldSignature = await signResource(JSON.stringify(body), retiringKey);
-        let newSignature = await signResource(JSON.stringify(body), newKey);
+        let oldSignature = await signResource(JSON.stringify(body), oldCurrentKey);
+        let newSignature = await signResource(JSON.stringify(body), newCurrentKey);
         let signature = "signer=\"" + newSignature + "\"; rotation=\"" + oldSignature + "\"";
 
-        urls.forEach(async(url) => {
-            try {
-                let response = await putHistory(signature, body, did, url);
-                console.log(response);
-            }
-
-            catch (error) {
-                console.log("Could Not Post to Server: " + error + ".");
-            }
+        await batchPutHistory(signature, body, did, urls).then(function (response) {
+            console.log(response);
+        }).catch(function (error) {
+            console.error(error);
+            throw error;
         });
     }
 
-    if (save === true) {
-        let key = await toBase64(newKey);
-        if (storage.toLowerCase() === "local") {
-            localStorage.setItem("dideryPrivateKey", key);
+    if (saveCurrent === true) {
+        let key = await toBase64(newCurrentKey);
+        if (storageCurrent.toLowerCase() === "local") {
+            localStorage.setItem("CurrentPrivateKey", key);
             console.log("Key saved to local storage.");
         }
 
-        else if (storage.toLowerCase() === "session") {
-            sessionStorage.setItem("dideryPrivateKey", key);
+        else if (storageCurrent.toLowerCase() === "session") {
+            sessionStorage.setItem("CurrentPrivateKey", key);
             console.log("Key saved to session storage.");
         }
 
-        else if (storage.toLowerCase() === "download") {
+        else if (storageCurrent.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
-                fileSaver.saveAs(blob, "dideryPrivateKey.txt");
-                console.log("Key saved to downloaded file dideryPrivateKey.txt");
+                fileSaver.saveAs(blob, "CurrentPrivateKey.txt");
+                console.log("Key saved to downloaded file CurrentPrivateKey.txt");
             }
 
             catch (error) {
-                console.log("Could Not Download Key File: " + error + ".");
+                console.error("Could Not Download Key File: " + error + ".");
             }
         }
 
         else {
-            console.log("Invalid Storage Location.")
+            console.error("Invalid Storage Location.");
         }
     }
 
-    if (show === true) {
+    if (savePreRotated === true) {
+        let key = await toBase64(preRotatedKeyPair[0]);
+        if (storagePreRotated.toLowerCase() === "local") {
+            localStorage.setItem("PreRotatedPrivateKey", key);
+            console.log("Key saved to local storage.");
+        }
+
+        else if (storagePreRotated.toLowerCase() === "session") {
+            sessionStorage.setItem("PreRotatedPrivateKey", key);
+            console.log("Key saved to session storage.");
+        }
+
+        else if (storagePreRotated.toLowerCase() === "download") {
+            try {
+                let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
+                fileSaver.saveAs(blob, "PreRotatedPrivateKey.txt");
+                console.log("Key saved to downloaded file PreRotatedPrivateKey.txt");
+            }
+
+            catch (error) {
+                console.error("Could Not Download Key File: " + error + ".");
+            }
+        }
+
+        else {
+            console.error("Invalid Storage Location.");
+        }
+    }
+
+    if (showCurrent === true) {
+        let pkey = await toBase64(newCurrentKey);
+        alert("Please save your current private key in a secure location:\n\n" + pkey);
+    }
+
+    if (showPreRotated === true) {
         let pkey = await toBase64(preRotatedKeyPair[0]);
         /*m.render(document.body,
             m("div", {class: "ui tiny modal"},
-                m("div", {class: "ui header"}, "New Pre-Rotated Key"),
+                m("div", {class: "ui header"}, "Pre-Rotated Key"),
                 m("div", {class: "content"},
                     m("div", {class: "container"},
-                        m("p", "Please save this new pre-rotated key in a secure location:"),
+                        m("p", "Please save this pre-rotated key in a secure location:"),
                         m("p", {style: "word-wrap: break-word"},
                             m("b", pkey)))),
                 m("div", {class: "actions"},
@@ -489,7 +530,8 @@ export async function keyRotationEvent(retiringKey, newKey, did, options={}) {
 
             }
         }).modal('show');*/
-        alert("Please save this key in a secure location:\n\n" + pkey);
+
+        alert("Please save your pre-rotated private key in a secure location:\n\n" + pkey);
     }
 
     return preRotatedKeyPair;

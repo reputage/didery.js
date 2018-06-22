@@ -18,6 +18,15 @@ const m = require('mithril');
 
 let submitInception = async function(e) {
     e.preventDefault();
+
+    if (!$('#incept-fail').hasClass("hidden")) {
+        $('#incept-fail').addClass("hidden");
+    }
+
+    if (!$('#incept-success').hasClass("hidden")) {
+        $('#incept-success').addClass("hidden");
+    }
+
     let currentSeed = $('#incept-current-seed').val();
     let preRotated = $('#incept-pre-rotated-seed').val();
     let currentPrivateKey = $('#incept-current-private-key').val();
@@ -46,7 +55,9 @@ let submitInception = async function(e) {
     }
 
     if (saveCurrent === true && storageCurrent === "") {
-        console.log("No Storage Specified.");
+        console.error("No Storage Specified.");
+        $('#incept-fail-message').text("No Storage Specified.");
+        $('#incept-fail').removeClass("hidden");
         return;
     }
 
@@ -65,7 +76,9 @@ let submitInception = async function(e) {
     }
 
     if (savePreRotated === true && storagePreRotated === "") {
-        console.log("No Storage Specified.");
+        console.error("No Storage Specified.");
+        $('#incept-fail-message').text("No Storage Specified.");
+        $('#incept-fail').removeClass("hidden");
         return;
     }
 
@@ -75,7 +88,9 @@ let submitInception = async function(e) {
             options.currentSeed = await fromBase64(currentSeed);
         }
         catch (error) {
-            console.log("Invalid Key: " + error + ".");
+            console.error("Invalid Key: " + error + ".");
+            $('#incept-fail-message').text("Invalid Key: " + error + ".");
+            $('#incept-fail').removeClass("hidden");
             return;
         }
     }
@@ -85,7 +100,9 @@ let submitInception = async function(e) {
             options.preRotated = await fromBase64(preRotated);
         }
         catch (error) {
-            console.log("Invalid Key: " + error + ".");
+            console.error("Invalid Key: " + error + ".");
+            $('#incept-fail-message').text("Invalid Key: " + error + ".");
+            $('#incept-fail').removeClass("hidden");
             return;
         }
     }
@@ -98,14 +115,18 @@ let submitInception = async function(e) {
             options.currentKeyPair = keyPair;
         }
         catch (error) {
-            console.log("Invalid Current Key: " + error + ".");
+            console.error("Invalid Current Key: " + error + ".");
+            $('#incept-fail-message').text("Invalid Current Key: " + error + ".");
+            $('#incept-fail').removeClass("hidden");
             return;
         }
     }
 
     else if ((currentPrivateKey !== '' && currentPublicKey === '') ||
         (currentPrivateKey === '' && currentPublicKey !== '')) {
-        console.log("Incomplete Current Key Pair.");
+        console.error("Incomplete Current Key Pair.");
+        $('#incept-fail-message').text("Incomplete Current Key Pair.");
+        $('#incept-fail').removeClass("hidden");
         return;
     }
 
@@ -117,14 +138,18 @@ let submitInception = async function(e) {
             options.preRotatedKeyPair = keyPair;
         }
         catch (error) {
-            console.log("Invalid Current Key: " + error + ".");
+            console.error("Invalid Pre-rotated Key: " + error + ".");
+            $('#incept-fail-message').text("Invalid Pre-rotated Key: " + error + ".");
+            $('#incept-fail').removeClass("hidden");
             return;
         }
     }
 
     else if ((preRotatedPrivateKey !== '' && preRotatedPublicKey === '') ||
         (preRotatedPrivateKey === '' && preRotatedPublicKey !== '')) {
-        console.log("Incomplete Current Key Pair.");
+        console.error("Incomplete Pre-rotated Key Pair.");
+        $('#incept-fail-message').text("Invalid Pre-rotated Key: " + error + ".");
+        $('#incept-fail').removeClass("hidden");
         return;
     }
 
@@ -146,7 +171,14 @@ let submitInception = async function(e) {
     options.showCurrent = showCurrent;
     options.showPreRotated = showPreRotated;
 
-    keyInceptionEvent(options);
+    await keyInceptionEvent(options).catch(function (error) {
+        $('#incept-fail-message').text(error);
+        $('#incept-fail').removeClass("hidden");
+    });
+
+    if ($('#incept-fail').hasClass("hidden")) {
+        $('#incept-success').removeClass("hidden");
+    }
 };
 
 // ================================================== //
@@ -154,6 +186,14 @@ let submitInception = async function(e) {
 let submitRotation = async function(e) {
     e.preventDefault();
     $('.error').removeClass("error");
+
+    if (!$('#rotate-fail').hasClass("hidden")) {
+        $('#rotate-fail').addClass("hidden");
+    }
+
+    if (!$('#rotate-success').hasClass("hidden")) {
+        $('#rotate-success').addClass("hidden");
+    }
 
     let oldKey = await fromBase64($('#rotate-old-private-key').val());
     let newKey = await fromBase64($('#rotate-new-private-key').val());
@@ -163,43 +203,71 @@ let submitRotation = async function(e) {
     let preRotatedPublicKey = $('#rotate-pre-rotated-public-key').val();
     let urls = $('#rotate-urls').val();
     let post = $('#rotate-post').prop('checked');
-    let save = $('#rotate-save').prop('checked');
-    let show = $('#rotate-show').prop('checked');
+    let saveCurrent = $('#rotate-save-current').prop('checked');
+    let savePreRotated = $('#rotate-save-pre-rotated').prop('checked');
+    let showCurrent = $('#rotate-show-current').prop('checked');
+    let showPreRotated = $('#rotate-show-pre-rotated').prop('checked');
 
-    console.log(oldKey);
-    console.log(newKey);
-    console.log(did);
     if (oldKey.length === 0) {
         $('#rotate-old-private-key').parent().addClass("error");
+        $('#rotate-fail-message').text("Missing Required field: Old Private Key.");
+        $('#rotate-fail').removeClass("hidden");
         return;
     }
 
     if (newKey.length === 0) {
         $('#rotate-new-private-key').parent().addClass("error");
+        $('#rotate-fail-message').text("Missing Required field: New Private Key.");
+        $('#rotate-fail').removeClass("hidden");
         return;
     }
 
     if (did === "") {
         $('#rotate-did').parent().addClass("error");
+        $('#rotate-fail-message').text("Missing Required field: DID.");
+        $('#rotate-fail').removeClass("hidden");
         return;
     }
 
-    let storage = "";
-    if ($('#rotate-local').prop('checked')) {
-        storage = "local"
+    let storageCurrent = "";
+    if ($('#rotate-local-current').prop('checked')) {
+        storageCurrent = "local"
     }
-    else if ($('#rotate-session').prop('checked')) {
-        storage = "session";
+    else if ($('#rotate-session-current').prop('checked')) {
+        storageCurrent = "session";
     }
-    else if ($('#rotate-download').prop('checked')) {
-        storage = "download";
+    else if ($('#rotate-download-current').prop('checked')) {
+        storageCurrent = "download";
     }
     else {
-        storage = "";
+        storageCurrent = "";
     }
 
-    if (save === true && storage === "") {
-        console.log("No Storage Specified.");
+    if (saveCurrent === true && storageCurrent === "") {
+        console.error("No Storage Specified.");
+        $('#rotate-fail-message').text("No Storage Specified.");
+        $('#rotate-fail').removeClass("hidden");
+        return;
+    }
+
+    let storagePreRotated = "";
+    if ($('#rotate-local-current').prop('checked')) {
+        storagePreRotated = "local"
+    }
+    else if ($('#rotate-session-current').prop('checked')) {
+        storagePreRotated = "session";
+    }
+    else if ($('#rotate-download-current').prop('checked')) {
+        storagePreRotated = "download";
+    }
+    else {
+        storagePreRotated = "";
+    }
+
+    if (savePreRotated === true && storagePreRotated === "") {
+        console.error("No Storage Specified.");
+        $('#rotate-fail-message').text("No Storage Specified.");
+        $('#rotate-fail').removeClass("hidden");
         return;
     }
 
@@ -209,7 +277,9 @@ let submitRotation = async function(e) {
             options.seed = await fromBase64(seed);
         }
         catch (error) {
-            console.log("Invalid Key: " + error + ".");
+            console.error("Invalid Key: " + error + ".");
+            $('#rotate-fail-message').text("Invalid Key: " + error + ".");
+            $('#rotate-fail').removeClass("hidden");
             return;
         }
     }
@@ -221,15 +291,19 @@ let submitRotation = async function(e) {
             keyPair.push(await fromBase64(preRotatedPublicKey));
             options.preRotatedKeyPair = keyPair;
         }
-        catch (err) {
-            console.log("Invalid Current Key: " + err + ".");
+        catch (error) {
+            console.error("Invalid Current Key: " + error + ".");
+            $('#rotate-fail-message').text("Invalid Current Key: " + error + ".");
+            $('#rotate-fail').removeClass("hidden");
             return;
         }
     }
 
     else if ((preRotatedPrivateKey !== '' && preRotatedPublicKey === '') ||
         (preRotatedPrivateKey === '' && preRotatedPublicKey !== '')) {
-        console.log("Incomplete Current Key Pair.");
+        console.error("Incomplete Current Key Pair.");
+        $('#rotate-fail-message').text("Incomplete Current Key Pair.");
+        $('#rotate-fail').removeClass("hidden");
         return;
     }
 
@@ -237,15 +311,28 @@ let submitRotation = async function(e) {
         options.urls = urls.split(',');
     }
 
-    if (storage !== "") {
-        options.storage = storage;
+    if (storageCurrent !== "") {
+        options.storageCurrent = storageCurrent;
+    }
+
+    if (storagePreRotated !== "") {
+        options.storagePreRotated = storagePreRotated;
     }
 
     options.post = post;
-    options.save = save;
-    options.show = show;
+    options.saveCurrent = saveCurrent;
+    options.savePreRotated = savePreRotated;
+    options.showCurrent = showCurrent;
+    options.showPreRotated = showPreRotated;
 
-    keyRotationEvent(oldKey, newKey, did, options);
+    await keyRotationEvent(oldKey, newKey, did, options).catch(function (error) {
+        $('#rotate-fail-message').text(error);
+        $('#rotate-fail').removeClass("hidden");
+    });
+
+    if ($('#rotate-fail').hasClass("hidden")) {
+        $('#rotate-success').removeClass("hidden");
+    }
 };
 // ================================================== //
 //                       MAIN                         //
@@ -426,7 +513,7 @@ m.render(document.body,
                     m("i", {class: "close icon"}),
                     m("div", {class: "header"}, "Key Inception Success"),
                     m("p", {id: "incept-success-message"}, "Your new keys have successfully been created.")),
-                m("div", {id: "incept-success", class: "ui negative message hidden"},
+                m("div", {id: "incept-fail", class: "ui negative message hidden"},
                     m("i", {class: "close icon"}),
                     m("div", {class: "header"}, "Key Inception Failure"),
                     m("p", {id: "incept-fail-message"})))),
@@ -593,11 +680,11 @@ m.render(document.body,
                             type: "submit"}, "Run Key Rotation"))),
                 m("div", {id: "rotate-success", class: "ui positive message hidden"},
                     m("i", {class: "close icon"}),
-                    m("div", {class: "header"}, "Key Inception Success"),
-                    m("p", {id: "rotate-success-message"}, "Your new keys have successfully been created.")),
-                m("div", {id: "rotate-success", class: "ui negative message hidden"},
+                    m("div", {class: "header"}, "Key Rotation Success"),
+                    m("p", {id: "rotate-success-message"}, "Your new keys have successfully been rotated.")),
+                m("div", {id: "rotate-fail", class: "ui negative message hidden"},
                     m("i", {class: "close icon"}),
-                    m("div", {class: "header"}, "Key Inception Failure"),
+                    m("div", {class: "header"}, "Key Rotation Failure"),
                     m("p", {id: "rotate-fail-message"}))))));
 
 // ================================================== //
