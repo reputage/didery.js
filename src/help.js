@@ -10,7 +10,7 @@
 // ================================================== //
 
 import {getHistory, putHistory} from "./api";
-import {batchPostHistory, batchPutHistory} from "./batch";
+import {batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
 const moment = require('moment');
 const fileSaver = require('file-saver');
@@ -18,6 +18,31 @@ const m = require('mithril');
 
 // ================================================== //
 //                     FUNCTIONS                      //
+// ================================================== //
+
+Object.compare = function (obj1, obj2) {
+    //Loop through properties in object 1
+    for (let p in obj1) {
+        if (obj1.hasOwnProperty(p) !== obj2.hasOwnProperty(p)) return false;
+
+        switch (typeof (obj1[p])) {
+            case 'object':
+                if (!Object.compare(obj1[p], obj2[p])) return false;
+                break;
+            case 'function':
+                if (typeof (obj2[p]) === 'undefined' || (p !== 'compare' && obj1[p].toString() !== obj2[p].toString())) return false;
+                break;
+            default:
+                if (obj1[p] !== obj2[p]) return false;
+        }
+    }
+
+    for (var p in obj2) {
+        if (typeof (obj1[p]) === 'undefined') return false;
+    }
+    return true;
+};
+
 // ================================================== //
 
 export function parseSignatureHeader(signature) {
@@ -79,6 +104,135 @@ export function parseSignatureHeader(signature) {
         });
 
         return sigs;
+    }
+}
+
+// ================================================== //
+
+export function checkConsensus(data, level=1.0) {
+    /* Compares entries in an array to verify consensus. Returns True if consensus is reached or
+    false if consensus percentage falls below the supplied level.
+
+        Parameters:
+        data - Array of data entries to compare
+        level - Optional float for minimal level of consensus (between 0 and 1)
+    */
+    if (level > 1 || level < 0) {
+        throw "Invalid Level: level must be between 0 and 1.";
+    }
+
+    let unique = data.filter((v, i, a) => a.indexOf(v) === i);
+    if (unique.length !== 1) {
+        console.warn("Consensus level is below 100%. Compromised data sources should be removed.");
+        let mostFrequent = 0;
+        let type = "";
+        if (typeof data[0] === 'object') {
+            type = "object";
+        }
+        else if (typeof data[0] === 'function') {
+            type = "function";
+        }
+        else {
+            type = "primitive"
+        }
+        for (let i=0; i < unique.length; i++) {
+            let frequency = 0;
+            for (let j=0; j < data.length; j++) {
+                if (type === "object") {
+                    if (Object.compare(unique[i], data[j])) {
+                        frequency++;
+                    }
+                }
+                else if (type === "primitive") {
+                    if (unique[i] === data[j]) {
+                        frequency++;
+                    }
+                }
+                else {
+                    throw new TypeError("primitive or object expected");
+                }
+            }
+            if (frequency > mostFrequent) {
+                mostFrequent = frequency;
+            }
+        }
+
+        let consensus = mostFrequent / data.length;
+        if (consensus < level) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    else {
+        return true;
+    }
+}
+
+// ================================================== //
+
+export function getConsensus(data, level=0.0) {
+    /* Compares entries in an array to verify consensus. Returns most frequent data entry if
+    consensus level is reached, otherwise throws an error.
+
+        Parameters:
+        data - Array of data entries to compare
+        level - Optional float for minimal level of consensus (between 0 and 1)
+    */
+
+    if (level > 1 || level < 0) {
+        throw "Invalid Consensus Level: Level must be between 0 and 1.";
+    }
+
+    let unique = data.filter((v, i, a) => a.indexOf(v) === i);
+    if (unique.length !== 1) {
+        console.warn("Consensus level is below 100%. Compromised data sources should be removed.");
+        let mostFrequent = "";
+        let highestFrequency = 0;
+        let type = "";
+        if (typeof data[0] === 'object') {
+            type = "object";
+        }
+        else if (typeof data[0] === 'function') {
+            type = "function";
+        }
+        else {
+            type = "primitive"
+        }
+        for (let i=0; i < unique.length; i++) {
+            let frequency = 0;
+            for (let j=0; j < data.length; j++) {
+                if (type === "object") {
+                    if (Object.compare(unique[i], data[j])) {
+                        frequency++;
+                    }
+                }
+                else if (type === "primitive") {
+                    if (unique[i] === data[j]) {
+                        frequency++;
+                    }
+                }
+                else {
+                    throw new TypeError("primitive or object expected");
+                }
+            }
+            if (frequency > highestFrequency) {
+                highestFrequency = frequency;
+                mostFrequent = unique[i];
+            }
+        }
+
+        let consensus = highestFrequency / data.length;
+        if (consensus < level) {
+            throw "Consensus Error: Consensus unreached."
+        }
+        else {
+            return mostFrequent;
+        }
+    }
+    else {
+        return data[0];
     }
 }
 
@@ -183,22 +337,25 @@ export async function keyInceptionEvent(options={}) {
     current key (in base64), and show the pre-rotated key(in base64).
 
         Parameters:
-        currentSeed - Optional seed (byte array) for current key pair generation
-        preRotatedSeed - Optional seed (byte array) for pre-rotated key pair generation
-        currentKeyPair - Optional array with the current private key (byte array) and current public key (byte array)
+        options.currentSeed - Optional seed (byte array) for current key pair generation
+        options.preRotatedSeed - Optional seed (byte array) for pre-rotated key pair generation
+        options.currentKeyPair - Optional array with the current private key (byte array) and current public key (byte array)
         [private, public]
-        preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public key (byte array)
+        options.preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public key (byte array)
         [private, public]
-        post - Optional boolean for posting to server or not
-        urls - Optional array of server URLs
-        saveCurrent - Optional boolean for saving current private key or not
-        savePreRotated - Optional boolean for saving pre-rotated private key or not
-        storageCurrent - Optional current private key storage location string; Accepted values include "local",
+        options.post - Optional boolean for posting to server or not
+        options.urls - Optional array of server URLs
+        options.saveCurrent - Optional boolean for saving current private key or not
+        options.savePreRotated - Optional boolean for saving pre-rotated private key or not
+        options.saveDid - Optional boolean for saving DID or not
+        options.storageCurrent - Optional current private key storage location string; Accepted values include "local",
         "session" or "download"
-        preRotatedStorage - Optional pre-rotated private key storage location string; Accepted values include "local",
+        options.preRotatedStorage - Optional pre-rotated private key storage location string; Accepted values include "local",
         "session" or "download"
-        showCurrent - Optional boolean for showing the current key or not
-        showPreRotated - Optional boolean for showing the pre-rotated key or not
+        options.storageDid - Optional DID storage location string; Accepted values include "local", "session" or "download"
+        options.showCurrent - Optional boolean for showing the current key or not
+        options.showPreRotated - Optional boolean for showing the pre-rotated key or not
+        options.showDid - Optional boolean for showing the did or not
     */
     let currentSeed = options.currentSeed || [];
     let preRotatedSeed = options.preRotatedSeed || [];
@@ -208,10 +365,13 @@ export async function keyInceptionEvent(options={}) {
     let urls = options.urls || ["http://127.0.0.1:8080/"];
     let saveCurrent = options.saveCurrent || false;
     let savePreRotated = options.savePreRotated || false;
+    let saveDid = options.saveDid || false;
     let storageCurrent = options.storageCurrent || "local";
     let storagePreRotated = options.storagePreRotated || "local";
+    let storageDid = options.storageDid || "local";
     let showCurrent = options.showCurrent || false;
     let showPreRotated = options.showPreRotated || false;
+    let showDid = options.showDid || false;
 
     if ((currentKeyPair === undefined || currentKeyPair.length === 0) &&
         (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
@@ -259,8 +419,9 @@ export async function keyInceptionEvent(options={}) {
         return;
     }
 
+    let did = await makeDID(currentKeyPair[1]);
+
     if (post === true) {
-        let did = await makeDID(currentKeyPair[1]);
         let ckSigner = await toBase64(currentKeyPair[1]);
         let prkSigner = await toBase64(preRotatedKeyPair[1]);
         let body = {
@@ -343,6 +504,36 @@ export async function keyInceptionEvent(options={}) {
         }
     }
 
+    if (saveDid === true) {
+        if (storageDid.toLowerCase() === "local") {
+            localStorage.setItem("DID", key);
+            console.log("DID saved to local storage.");
+        }
+
+        else if (storageDid.toLowerCase() === "session") {
+            sessionStorage.setItem("DID", key);
+            console.log("DID saved to session storage.");
+        }
+
+        else if (storageDid.toLowerCase() === "download") {
+            try {
+                let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
+                fileSaver.saveAs(blob, "DID.txt");
+                console.log("DID saved to downloaded file DID.txt");
+            }
+
+            catch (error) {
+                console.error("Could Not Download DID File: " + error + ".");
+                throw "Could Not Download DID File: " + error + "."
+            }
+        }
+
+        else {
+            console.error("Invalid Storage Location.");
+            throw "Invalid Storage Location."
+        }
+    }
+
     if (showCurrent === true) {
         let pkey = await toBase64(currentKeyPair[0]);
         alert("Please save your current private key in a secure location:\n\n" + pkey);
@@ -350,26 +541,12 @@ export async function keyInceptionEvent(options={}) {
 
     if (showPreRotated === true) {
         let pkey = await toBase64(preRotatedKeyPair[0]);
-        /*m.render(document.body,
-            m("div", {class: "ui tiny modal"},
-                m("div", {class: "ui header"}, "Pre-Rotated Key"),
-                m("div", {class: "content"},
-                    m("div", {class: "container"},
-                        m("p", "Please save this pre-rotated key in a secure location:"),
-                        m("p", {style: "word-wrap: break-word"},
-                            m("b", pkey)))),
-                m("div", {class: "actions"},
-                    m("div", {class: "ui green ok button"}, "OK"))));
-
-        $('.ui.tiny.modal').modal({
-            // Removes key from DOM
-            onHide: function(){
-                $('.container').remove();
-
-            }
-        }).modal('show');*/
-
         alert("Please save your pre-rotated private key in a secure location:\n\n" + pkey);
+    }
+
+
+    if (showDid === true) {
+        alert("Please save your DID in a secure location:\n\n" + did);
     }
 
     return [currentKeyPair, preRotatedKeyPair];
@@ -388,23 +565,25 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         oldCurrentKey - Byte array of retiring current private key
         newCurrentKey - Byte array of new current key (old pre-rotated key)
         did - DID associated with key history
-        seed - Optional seed (byte array) for key generation
-        preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public key (byte array)
+        options.seed - Optional seed (byte array) for key generation
+        options.preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public key (byte array)
         [private, public]
-        post - Optional boolean for posting to server or not
-        urls - Optional array of server URLs
-        saveCurrent - Optional boolean for saving current private key or not
-        savePreRotated - Optional boolean for saving pre-rotated private key or not
-        storageCurrent - Optional current private key storage location string; Accepted values include "local",
+        options.post - Optional boolean for posting to server or not
+        options.consensus - Optional float for consensus level of key history
+        options.urls - Optional array of server URLs
+        options.saveCurrent - Optional boolean for saving current private key or not
+        options.savePreRotated - Optional boolean for saving pre-rotated private key or not
+        options.storageCurrent - Optional current private key storage location string; Accepted values include "local",
         "session" or "download"
-        storagePreRotated - Optional pre-rotated private key storage location string; Accepted values include "local",
+        options.storagePreRotated - Optional pre-rotated private key storage location string; Accepted values include "local",
         "session" or "download"
-        showCurrent - Optional boolean for showing the current key or not
-        showPreRotated - Optional boolean for showing the pre-rotated key or not
+        options.showCurrent - Optional boolean for showing the current key or not
+        options.showPreRotated - Optional boolean for showing the pre-rotated key or not
     */
     let seed = options.seed || [];
     let preRotatedKeyPair = options.preRotatedKeyPair || [];
     let post = options.post || false;
+    let consensus = options.consensus || 1.0;
     let urls = options.urls || ["http://127.0.0.1:8080/"];
     let saveCurrent = options.saveCurrent || false;
     let savePreRotated = options.savePreRotated || false;
@@ -427,7 +606,15 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         return;
     }
 
-    let history = await getHistory(urls[0], did);
+
+    let history = {};
+    await batchGetHistory(urls, did).then(function (response) {
+        history = getConsensus(response, consensus);
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
+    });
+
     let body = history.history;
     if (post === true) {
         let prkSigner = await toBase64(preRotatedKeyPair[1]);
@@ -512,25 +699,6 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
 
     if (showPreRotated === true) {
         let pkey = await toBase64(preRotatedKeyPair[0]);
-        /*m.render(document.body,
-            m("div", {class: "ui tiny modal"},
-                m("div", {class: "ui header"}, "Pre-Rotated Key"),
-                m("div", {class: "content"},
-                    m("div", {class: "container"},
-                        m("p", "Please save this pre-rotated key in a secure location:"),
-                        m("p", {style: "word-wrap: break-word"},
-                            m("b", pkey)))),
-                m("div", {class: "actions"},
-                    m("div", {class: "ui green ok button"}, "OK"))));
-
-        $('.ui.tiny.modal').modal({
-            // Removes key from DOM
-            onHide: function(){
-                $('.container').remove();
-
-            }
-        }).modal('show');*/
-
         alert("Please save your pre-rotated private key in a secure location:\n\n" + pkey);
     }
 

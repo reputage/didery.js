@@ -10,12 +10,17 @@
 // ================================================== //
 
 import {fromBase64, keyInceptionEvent, keyRotationEvent} from "./help";
+import {subscribeHistory} from "./api";
 const m = require('mithril');
 
 // ================================================== //
 //                     FUNCTIONS                      //
 // ================================================== //
-
+subscribeHistory("http://127.0.0.1:8080/").then(function(response) {
+    console.log(response);
+}).catch(function(error) {
+    console.error(error);
+});
 let submitInception = async function(e) {
     e.preventDefault();
 
@@ -83,7 +88,7 @@ let submitInception = async function(e) {
     }
 
     let options = {};
-    if (currentSeed !== '') {
+    if (currentSeed !== "") {
         try {
             options.currentSeed = await fromBase64(currentSeed);
         }
@@ -95,7 +100,7 @@ let submitInception = async function(e) {
         }
     }
 
-    if (preRotated !== '') {
+    if (preRotated !== "") {
         try {
             options.preRotated = await fromBase64(preRotated);
         }
@@ -107,7 +112,7 @@ let submitInception = async function(e) {
         }
     }
 
-    if (currentPrivateKey !== '' && currentPublicKey !== '') {
+    if (currentPrivateKey !== "" && currentPublicKey !== "") {
         try {
             let keyPair = [];
             keyPair.push(await fromBase64(currentPrivateKey));
@@ -122,15 +127,15 @@ let submitInception = async function(e) {
         }
     }
 
-    else if ((currentPrivateKey !== '' && currentPublicKey === '') ||
-        (currentPrivateKey === '' && currentPublicKey !== '')) {
+    else if ((currentPrivateKey !== "" && currentPublicKey === "") ||
+        (currentPrivateKey === "" && currentPublicKey !== "")) {
         console.error("Incomplete Current Key Pair.");
         $('#incept-fail-message').text("Incomplete Current Key Pair.");
         $('#incept-fail').removeClass("hidden");
         return;
     }
 
-    if (preRotatedPrivateKey !== '' && preRotatedPublicKey !== '') {
+    if (preRotatedPrivateKey !== "" && preRotatedPublicKey !== "") {
         try {
             let keyPair = [];
             keyPair.push(await fromBase64(preRotatedPrivateKey));
@@ -145,15 +150,15 @@ let submitInception = async function(e) {
         }
     }
 
-    else if ((preRotatedPrivateKey !== '' && preRotatedPublicKey === '') ||
-        (preRotatedPrivateKey === '' && preRotatedPublicKey !== '')) {
+    else if ((preRotatedPrivateKey !== "" && preRotatedPublicKey === "") ||
+        (preRotatedPrivateKey === "" && preRotatedPublicKey !== "")) {
         console.error("Incomplete Pre-rotated Key Pair.");
         $('#incept-fail-message').text("Invalid Pre-rotated Key: " + error + ".");
         $('#incept-fail').removeClass("hidden");
         return;
     }
 
-    if (urls !== '') {
+    if (urls !== "") {
         options.urls = urls.split(',');
     }
 
@@ -201,6 +206,7 @@ let submitRotation = async function(e) {
     let seed = $('#rotate-seed').val();
     let preRotatedPrivateKey = $('#rotate-pre-rotated-private-key').val();
     let preRotatedPublicKey = $('#rotate-pre-rotated-public-key').val();
+    let consensus = $('#rotate-consensus').val();
     let urls = $('#rotate-urls').val();
     let post = $('#rotate-post').prop('checked');
     let saveCurrent = $('#rotate-save-current').prop('checked');
@@ -272,7 +278,7 @@ let submitRotation = async function(e) {
     }
 
     let options = {};
-    if (seed !== '') {
+    if (seed !== "") {
         try {
             options.seed = await fromBase64(seed);
         }
@@ -284,7 +290,7 @@ let submitRotation = async function(e) {
         }
     }
 
-    if (preRotatedPrivateKey !== '' && preRotatedPublicKey !== '') {
+    if (preRotatedPrivateKey !== "" && preRotatedPublicKey !== "") {
         try {
             let keyPair = [];
             keyPair.push(await fromBase64(preRotatedPrivateKey));
@@ -299,16 +305,20 @@ let submitRotation = async function(e) {
         }
     }
 
-    else if ((preRotatedPrivateKey !== '' && preRotatedPublicKey === '') ||
-        (preRotatedPrivateKey === '' && preRotatedPublicKey !== '')) {
+    else if ((preRotatedPrivateKey !== "" && preRotatedPublicKey === "") ||
+        (preRotatedPrivateKey === "" && preRotatedPublicKey !== "")) {
         console.error("Incomplete Current Key Pair.");
         $('#rotate-fail-message').text("Incomplete Current Key Pair.");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
 
-    if (urls !== '') {
+    if (urls !== "") {
         options.urls = urls.split(',');
+    }
+
+    if (consensus !== "") {
+        options.consensus = parseFloat(consensus);
     }
 
     if (storageCurrent !== "") {
@@ -568,6 +578,17 @@ m.render(document.body,
                                 m("input", {id:"rotate-pre-rotated-public-key",
                                             type: "text",
                                             placeholder: "Base64 Encoded Public Key ..."})))),
+                    m("div", {class: "field"},
+                        m("label", "Consensus Level ",
+                            m("span[data-content=This is an optional level of consensus that must be met by servers to " +
+                                "use server key history data. This should be a number between 0 and 1.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "rotate-seed",
+                            type: "number",
+                            step: "0.01",
+                            min: "0",
+                            max: "1",
+                            placeholder: "0"})),
                     m("div", {class: "field"},
                         m("label", "URL's ",
                             m("span[data-content=This is an optional list of comma separated urls. If you select the post " +
