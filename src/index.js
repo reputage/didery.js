@@ -16,9 +16,7 @@ const m = require('mithril');
 // ================================================== //
 //                     FUNCTIONS                      //
 // ================================================== //
-subscribeHistory("http://127.0.0.1:8080/").then(function(response) {
-    console.log(response);
-}).catch(function(error) {
+subscribeHistory("http://127.0.0.1:8080/").catch(function(error) {
     console.error(error);
 });
 let submitInception = async function(e) {
@@ -42,8 +40,10 @@ let submitInception = async function(e) {
     let post = $('#incept-post').prop('checked');
     let saveCurrent = $('#incept-save-current').prop('checked');
     let savePreRotated = $('#incept-save-pre-rotated').prop('checked');
+    let saveDid = $('#incept-save-did').prop('checked');
     let showCurrent = $('#incept-show-current').prop('checked');
     let showPreRotated = $('#incept-show-pre-rotated').prop('checked');
+    let showDid = $('#incept-show-did').prop('checked');
 
     let storageCurrent = "";
     if ($('#incept-local-current').prop('checked')) {
@@ -81,6 +81,27 @@ let submitInception = async function(e) {
     }
 
     if (savePreRotated === true && storagePreRotated === "") {
+        console.error("No Storage Specified.");
+        $('#incept-fail-message').text("No Storage Specified.");
+        $('#incept-fail').removeClass("hidden");
+        return;
+    }
+
+    let storageDid = "";
+    if ($('#incept-local-did').prop('checked')) {
+        storageDid = "local"
+    }
+    else if ($('#incept-session-did').prop('checked')) {
+        storageDid = "session";
+    }
+    else if ($('#incept-download-did').prop('checked')) {
+        storageDid = "download";
+    }
+    else {
+        storageDid = "";
+    }
+
+    if (saveDid === true && storageDid === "") {
         console.error("No Storage Specified.");
         $('#incept-fail-message').text("No Storage Specified.");
         $('#incept-fail').removeClass("hidden");
@@ -170,11 +191,17 @@ let submitInception = async function(e) {
         options.storagePreRotated = storagePreRotated;
     }
 
+    if (storageDid !== "") {
+        options.storageDid = storageDid;
+    }
+
     options.post = post;
     options.saveCurrent = saveCurrent;
     options.savePreRotated = savePreRotated;
+    options.saveDid = saveDid;
     options.showCurrent = showCurrent;
     options.showPreRotated = showPreRotated;
+    options.showDid = showDid;
 
     await keyInceptionEvent(options).catch(function (error) {
         $('#incept-fail-message').text(error);
@@ -418,7 +445,7 @@ m.render(document.body,
                                        rows: 5,
                                        placeholder: "URL's (Comma Separated) ..."})),
                     m("div", {class: "ui segment"},
-                        m("div", {class: "ui two column stackable grid"},
+                        m("div", {class: "ui three column stackable grid"},
                             m("div", {class: "column"},
                                 m("div", {class: "field"},
                                     m("div", {class: "ui toggle checkbox"},
@@ -459,9 +486,26 @@ m.render(document.body,
                                                 "saves your key to your browser's temporary storage (erased when the browser is " +
                                                 "closed). Download saves your key in a .txt file and downloads it onto your local " +
                                                 "machine.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i", {class: "icon question circle outline"})))))),
+                            m("div", {class: "column"},
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-show-did", type: "checkbox"}),
+                                        m("label", "Show DID ",
+                                            m("span[data-content=This is an option to show your newly generated DID.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                                m("i", {class: "icon question circle outline"}))))),
+                                m("div", {class: "field"},
+                                    m("div", {class: "ui toggle checkbox"},
+                                        m("input", {id:"incept-save-did", type: "checkbox"}),
+                                        m("label", "Save DID ",
+                                            m("span[data-content=This is an option to save your DID in one of the formats below. " +
+                                                "Local storage saves your DID to your browser's persistent storage. Session storage " +
+                                                "saves your DID to your browser's temporary storage (erased when the browser is " +
+                                                "closed). Download saves your DID in a .txt file and downloads it onto your local " +
+                                                "machine.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                                 m("i", {class: "icon question circle outline"})))))))),
                         m("div", {class: "ui segment"},
-                            m("div", {class: "ui two column stackable grid"},
+                            m("div", {class: "ui three column stackable grid"},
                                 m("div", {class: "column"},
                                     m("div", {class: "grouped fields"},
                                         m("label", "Current Save Location"),
@@ -513,6 +557,33 @@ m.render(document.body,
                                                 m("input", {id:"incept-download-pre-rotated",
                                                     type: "radio",
                                                     name: "incept-storage-pre-rotated",
+                                                    value: "download",
+                                                }),
+                                                m("label", "Download"))))),
+                                m("div", {class: "column"},
+                                    m("div", {class: "grouped fields"},
+                                        m("label", "DID Save Location"),
+                                        m("div", {class: "field"},
+                                            m("div", {class: "ui radio checkbox"},
+                                                m("input", {id: "incept-local-did",
+                                                    type: "radio",
+                                                    name: "incept-storage-did",
+                                                    value: "local",
+                                                }),
+                                                m("label", "Local Storage",))),
+                                        m("div", {class: "field"},
+                                            m("div", {class: "ui radio checkbox"},
+                                                m("input", {id:"incept-session-did",
+                                                    type: "radio",
+                                                    name: "incept-storage-did",
+                                                    value: "session",
+                                                }),
+                                                m("label", "Session Storage"))),
+                                        m("div", {class: "field"},
+                                            m("div", {class: "ui radio checkbox"},
+                                                m("input", {id:"incept-download-did",
+                                                    type: "radio",
+                                                    name: "incept-storage-did",
                                                     value: "download",
                                                 }),
                                                 m("label", "Download"))))))),

@@ -506,18 +506,18 @@ export async function keyInceptionEvent(options={}) {
 
     if (saveDid === true) {
         if (storageDid.toLowerCase() === "local") {
-            localStorage.setItem("DID", key);
+            localStorage.setItem("DID", did);
             console.log("DID saved to local storage.");
         }
 
         else if (storageDid.toLowerCase() === "session") {
-            sessionStorage.setItem("DID", key);
+            sessionStorage.setItem("DID", did);
             console.log("DID saved to session storage.");
         }
 
         else if (storageDid.toLowerCase() === "download") {
             try {
-                let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
+                let blob = new Blob([did], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "DID.txt");
                 console.log("DID saved to downloaded file DID.txt");
             }
