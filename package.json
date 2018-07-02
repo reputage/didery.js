@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx webpack --mode development",
     "watch": "npx webpack -w --mode development",
-    "build": "npx webpack --mode production"
+    "build": "npx webpack --mode production",
+    "dashboard": "npx webpack ./examples/dashboard/dashboard.js --output ./examples/dashboard/index.js --mode development"
   },
   "author": "Brady Hammond",
   "license": "ISC",
