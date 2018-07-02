@@ -16,7 +16,7 @@ const m = require('mithril');
 //                     FUNCTIONS                      //
 // ================================================== //
 
-subscribeHistory("http://127.0.0.1:8080/").catch(function(error) {
+didery.subscribeHistory("http://127.0.0.1:8080/").catch(function(error) {
     console.error(error);
 });
 let submitInception = async function(e) {
@@ -203,7 +203,7 @@ let submitInception = async function(e) {
     options.showPreRotated = showPreRotated;
     options.showDid = showDid;
 
-    await keyInceptionEvent(options).catch(function (error) {
+    await didery.keyInceptionEvent(options).catch(function (error) {
         $('#incept-fail-message').text(error);
         $('#incept-fail').removeClass("hidden");
     });
@@ -362,7 +362,7 @@ let submitRotation = async function(e) {
     options.showCurrent = showCurrent;
     options.showPreRotated = showPreRotated;
 
-    await keyRotationEvent(oldKey, newKey, did, options).catch(function (error) {
+    await didery.keyRotationEvent(oldKey, newKey, did, options).catch(function (error) {
         $('#rotate-fail-message').text(error);
         $('#rotate-fail').removeClass("hidden");
     });
