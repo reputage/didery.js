@@ -9,7 +9,9 @@
 //                     IMPORTS                        //
 // ================================================== //
 
-const didery = require('../../dist/didery');
+//import didery from 'didery';
+
+const didery = require('../../src/index.js');
 const m = require('mithril');
 
 // ================================================== //
