@@ -49,12 +49,14 @@ for a development dependency, or
 ::
   $ npm install --save didery
 for a production dependency.
+
 Testing
 =======
 The dideryJS unit tests utilize the Mocha testing framework and the native Node.js assert library. To run the tests for
 dideryJS use the following terminal command:
 ::
   $ npm test
+  
 Examples
 ========
 Use cases for dideryJS can be found in the `examples
