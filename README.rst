@@ -1,7 +1,7 @@
 .. image:: https://github.com/reputage/didery.js/blob/dev/logo/didery.png
    :alt: Didery logo
 
-.. contents::
+.. contents:: Table of Contents
 
 Overview
 ========
