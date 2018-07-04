@@ -31,6 +31,7 @@ for development, or:
   $ npm run build
 for production. The compiled library can be found in the newly created dist folder and is named didery.js.
 Alternatively, the un-compiled code can be referenced directly from src/index.js.
+
 Node
 ----
 The dideryJS library can also be downloaded as an npm repository. To do so make sure you have Node.js and the node
