@@ -1,3 +1,6 @@
+.. image:: https://github.com/reputage/didery.js/blob/dev/logo/logo.png
+   :alt: Didery logo
+
 .. contents::
 
 Overview
