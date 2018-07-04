@@ -1,4 +1,4 @@
-.. image:: https://github.com/reputage/didery.js/blob/dev/logo/logo.png
+.. image:: https://github.com/reputage/didery.js/blob/dev/logo/didery.png
    :alt: Didery logo
 
 .. contents::
