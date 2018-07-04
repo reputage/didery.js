@@ -34,8 +34,7 @@ export {getHistory,
     postRelays,
     putRelays,
     deleteRelays,
-    getErrors,
-    subscribeHistory} from "./api";
+    getErrors} from "./api";
 export {batchGetHistory,
     batchPostHistory,
     batchPutHistory,
@@ -46,8 +45,7 @@ export {batchGetHistory,
     batchPostRelays,
     batchPutRelays,
     batchDeleteRelays,
-    batchGetErrors,
-    batchSubscribeHistory} from "./batch";
+    batchGetErrors} from "./batch";
 
 // ================================================== //
 //                        EOF                         //

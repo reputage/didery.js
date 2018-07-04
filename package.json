@@ -8,7 +8,8 @@
     "dev": "npx webpack --mode development",
     "watch": "npx webpack -w --mode development",
     "build": "npx webpack --mode production",
-    "dashboard": "npx webpack ./examples/dashboard/dashboard.js --output ./examples/dashboard/index.js --mode development"
+    "dashboard": "npx webpack ./examples/dashboard/dashboard.js --output ./examples/dashboard/index.js --mode development",
+    "sse": "npx webpack ./examples/sse/sse.js --output ./examples/sse/index.js --mode development"
   },
   "babel": {
     "presets": [
