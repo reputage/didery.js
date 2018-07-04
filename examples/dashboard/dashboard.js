@@ -1,5 +1,5 @@
 // ================================================== //
-//                       INDEX                        //
+//                     DASHBOARD                      //
 // ================================================== //
 // Author: Brady Hammond                              //
 // Created: 05/25/2018                                //
@@ -9,16 +9,14 @@
 //                     IMPORTS                        //
 // ================================================== //
 
-const didery = require('../../dist/didery');
+import 'babel-polyfill';
+import * as didery from '../../src/index.js';
 const m = require('mithril');
 
 // ================================================== //
 //                     FUNCTIONS                      //
 // ================================================== //
 
-subscribeHistory("http://127.0.0.1:8080/").catch(function(error) {
-    console.error(error);
-});
 let submitInception = async function(e) {
     e.preventDefault();
 
@@ -60,8 +58,8 @@ let submitInception = async function(e) {
     }
 
     if (saveCurrent === true && storageCurrent === "") {
-        console.error("No Storage Specified.");
-        $('#incept-fail-message').text("No Storage Specified.");
+        console.error("Error: No storage specified");
+        $('#incept-fail-message').text("Error: No storage specified");
         $('#incept-fail').removeClass("hidden");
         return;
     }
@@ -81,8 +79,8 @@ let submitInception = async function(e) {
     }
 
     if (savePreRotated === true && storagePreRotated === "") {
-        console.error("No Storage Specified.");
-        $('#incept-fail-message').text("No Storage Specified.");
+        console.error("Error: No storage specified");
+        $('#incept-fail-message').text("Error: No storage specified");
         $('#incept-fail').removeClass("hidden");
         return;
     }
@@ -102,8 +100,8 @@ let submitInception = async function(e) {
     }
 
     if (saveDid === true && storageDid === "") {
-        console.error("No Storage Specified.");
-        $('#incept-fail-message').text("No Storage Specified.");
+        console.error("Error: No storage specified");
+        $('#incept-fail-message').text("Error: No storage specified");
         $('#incept-fail').removeClass("hidden");
         return;
     }
@@ -111,11 +109,11 @@ let submitInception = async function(e) {
     let options = {};
     if (currentSeed !== "") {
         try {
-            options.currentSeed = await fromBase64(currentSeed);
+            options.currentSeed = await didery.fromBase64(currentSeed);
         }
         catch (error) {
-            console.error("Invalid Key: " + error + ".");
-            $('#incept-fail-message').text("Invalid Key: " + error + ".");
+            console.error(error);
+            $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
             return;
         }
@@ -123,11 +121,11 @@ let submitInception = async function(e) {
 
     if (preRotated !== "") {
         try {
-            options.preRotated = await fromBase64(preRotated);
+            options.preRotated = await didery.fromBase64(preRotated);
         }
         catch (error) {
-            console.error("Invalid Key: " + error + ".");
-            $('#incept-fail-message').text("Invalid Key: " + error + ".");
+            console.error(error);
+            $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
             return;
         }
@@ -136,13 +134,13 @@ let submitInception = async function(e) {
     if (currentPrivateKey !== "" && currentPublicKey !== "") {
         try {
             let keyPair = [];
-            keyPair.push(await fromBase64(currentPrivateKey));
-            keyPair.push(await fromBase64(currentPublicKey));
+            keyPair.push(await didery.fromBase64(currentPrivateKey));
+            keyPair.push(await didery.fromBase64(currentPublicKey));
             options.currentKeyPair = keyPair;
         }
         catch (error) {
-            console.error("Invalid Current Key: " + error + ".");
-            $('#incept-fail-message').text("Invalid Current Key: " + error + ".");
+            console.error(error);
+            $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
             return;
         }
@@ -150,8 +148,8 @@ let submitInception = async function(e) {
 
     else if ((currentPrivateKey !== "" && currentPublicKey === "") ||
         (currentPrivateKey === "" && currentPublicKey !== "")) {
-        console.error("Incomplete Current Key Pair.");
-        $('#incept-fail-message').text("Incomplete Current Key Pair.");
+        console.error("Error: Incomplete current key pair.");
+        $('#incept-fail-message').text("Error: Incomplete current key pair.");
         $('#incept-fail').removeClass("hidden");
         return;
     }
@@ -159,13 +157,13 @@ let submitInception = async function(e) {
     if (preRotatedPrivateKey !== "" && preRotatedPublicKey !== "") {
         try {
             let keyPair = [];
-            keyPair.push(await fromBase64(preRotatedPrivateKey));
-            keyPair.push(await fromBase64(preRotatedPublicKey));
+            keyPair.push(await didery.fromBase64(preRotatedPrivateKey));
+            keyPair.push(await didery.fromBase64(preRotatedPublicKey));
             options.preRotatedKeyPair = keyPair;
         }
         catch (error) {
-            console.error("Invalid Pre-rotated Key: " + error + ".");
-            $('#incept-fail-message').text("Invalid Pre-rotated Key: " + error + ".");
+            console.error(error);
+            $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
             return;
         }
@@ -173,8 +171,8 @@ let submitInception = async function(e) {
 
     else if ((preRotatedPrivateKey !== "" && preRotatedPublicKey === "") ||
         (preRotatedPrivateKey === "" && preRotatedPublicKey !== "")) {
-        console.error("Incomplete Pre-rotated Key Pair.");
-        $('#incept-fail-message').text("Invalid Pre-rotated Key: " + error + ".");
+        console.error("Error: Incomplete pre-rotated key pair");
+        $('#incept-fail-message').text("Error: Incomplete pre-rotated key pair");
         $('#incept-fail').removeClass("hidden");
         return;
     }
@@ -203,7 +201,7 @@ let submitInception = async function(e) {
     options.showPreRotated = showPreRotated;
     options.showDid = showDid;
 
-    await keyInceptionEvent(options).catch(function (error) {
+    await didery.keyInceptionEvent(options).catch(function (error) {
         $('#incept-fail-message').text(error);
         $('#incept-fail').removeClass("hidden");
     });
@@ -227,8 +225,8 @@ let submitRotation = async function(e) {
         $('#rotate-success').addClass("hidden");
     }
 
-    let oldKey = await fromBase64($('#rotate-old-private-key').val());
-    let newKey = await fromBase64($('#rotate-new-private-key').val());
+    let oldKey = await didery.fromBase64($('#rotate-old-private-key').val());
+    let newKey = await didery.fromBase64($('#rotate-new-private-key').val());
     let did = $('#rotate-did').val();
     let seed = $('#rotate-seed').val();
     let preRotatedPrivateKey = $('#rotate-pre-rotated-private-key').val();
@@ -243,21 +241,21 @@ let submitRotation = async function(e) {
 
     if (oldKey.length === 0) {
         $('#rotate-old-private-key').parent().addClass("error");
-        $('#rotate-fail-message').text("Missing Required field: Old Private Key.");
+        $('#rotate-fail-message').text("Error: Missing required field Old Private Key.");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
 
     if (newKey.length === 0) {
         $('#rotate-new-private-key').parent().addClass("error");
-        $('#rotate-fail-message').text("Missing Required field: New Private Key.");
+        $('#rotate-fail-message').text("Error: Missing required field New Private Key.");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
 
     if (did === "") {
         $('#rotate-did').parent().addClass("error");
-        $('#rotate-fail-message').text("Missing Required field: DID.");
+        $('#rotate-fail-message').text("Error: Missing required field DID.");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
@@ -277,8 +275,8 @@ let submitRotation = async function(e) {
     }
 
     if (saveCurrent === true && storageCurrent === "") {
-        console.error("No Storage Specified.");
-        $('#rotate-fail-message').text("No Storage Specified.");
+        console.error("Error: No storage specified.");
+        $('#rotate-fail-message').text("Error: No storage specified.");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
@@ -298,8 +296,8 @@ let submitRotation = async function(e) {
     }
 
     if (savePreRotated === true && storagePreRotated === "") {
-        console.error("No Storage Specified.");
-        $('#rotate-fail-message').text("No Storage Specified.");
+        console.error("Error: No storage specified.");
+        $('#rotate-fail-message').text("Error: No storage specified.");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
@@ -307,11 +305,11 @@ let submitRotation = async function(e) {
     let options = {};
     if (seed !== "") {
         try {
-            options.seed = await fromBase64(seed);
+            options.seed = await didery.fromBase64(seed);
         }
         catch (error) {
-            console.error("Invalid Key: " + error + ".");
-            $('#rotate-fail-message').text("Invalid Key: " + error + ".");
+            console.error(error);
+            $('#rotate-fail-message').text(error);
             $('#rotate-fail').removeClass("hidden");
             return;
         }
@@ -320,13 +318,13 @@ let submitRotation = async function(e) {
     if (preRotatedPrivateKey !== "" && preRotatedPublicKey !== "") {
         try {
             let keyPair = [];
-            keyPair.push(await fromBase64(preRotatedPrivateKey));
-            keyPair.push(await fromBase64(preRotatedPublicKey));
+            keyPair.push(await didery.fromBase64(preRotatedPrivateKey));
+            keyPair.push(await didery.fromBase64(preRotatedPublicKey));
             options.preRotatedKeyPair = keyPair;
         }
         catch (error) {
-            console.error("Invalid Current Key: " + error + ".");
-            $('#rotate-fail-message').text("Invalid Current Key: " + error + ".");
+            console.error(error);
+            $('#rotate-fail-message').text(error);
             $('#rotate-fail').removeClass("hidden");
             return;
         }
@@ -334,8 +332,8 @@ let submitRotation = async function(e) {
 
     else if ((preRotatedPrivateKey !== "" && preRotatedPublicKey === "") ||
         (preRotatedPrivateKey === "" && preRotatedPublicKey !== "")) {
-        console.error("Incomplete Current Key Pair.");
-        $('#rotate-fail-message').text("Incomplete Current Key Pair.");
+        console.error("Error: Incomplete current key pair");
+        $('#rotate-fail-message').text("Error: Incomplete current key pair");
         $('#rotate-fail').removeClass("hidden");
         return;
     }
@@ -362,7 +360,7 @@ let submitRotation = async function(e) {
     options.showCurrent = showCurrent;
     options.showPreRotated = showPreRotated;
 
-    await keyRotationEvent(oldKey, newKey, did, options).catch(function (error) {
+    await didery.keyRotationEvent(oldKey, newKey, did, options).catch(function (error) {
         $('#rotate-fail-message').text(error);
         $('#rotate-fail').removeClass("hidden");
     });
