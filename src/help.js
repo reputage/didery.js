@@ -11,8 +11,8 @@
 
 import {batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
-const moment = require('moment');
 const fileSaver = require('file-saver');
+const moment = require('moment');
 
 // ================================================== //
 //                     FUNCTIONS                      //
@@ -135,23 +135,32 @@ export function parseSignatureHeader(signature) {
             if (!clause) {
                 return;
             }
-            try {
-                let result = clause.split(/=(.+)/);
-                tag = result[0];
-                value = result[1];
+
+            let result = clause.split(/=(.+)/);
+
+            if (result.length < 2) {
+                throw new Error("Signature formatted incorrectly");
             }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
+            tag = result[0];
+            value = result[1];
+
             tag = tag.trim();
             if (!tag) {
                 return;
             }
             value = value.trim();
-            if ((!value.startsWith('"')) || (!value.endsWith('"')) || (value.length < 3)) {
+            if (!(value.startsWith('\"') || value.startsWith('\''))) {
                 return;
             }
+
+            if (!(value.endsWith('\"') || value.endsWith('\''))) {
+                return;
+            }
+
+            if (value.length < 3) {
+                return;
+            }
+
             value = value.slice(1, -1);
             value = value.trim();
             sigs[tag] = value;
@@ -172,13 +181,16 @@ export function checkConsensus(data, level=1.0) {
      * @return {boolean} - Returns true if consensus is reached or false if consensus percentage falls below the
      * supplied level.
      */
+    if (data.length < 1) {
+        throw new Error("No comparable data found");
+    }
+
     if (level > 1 || level < 0) {
-        throw "Invalid Level: level must be between 0 and 1.";
+        throw new Error("Level must be between 0 and 1");
     }
 
     let unique = data.filter((v, i, a) => a.indexOf(v) === i);
     if (unique.length !== 1) {
-        console.warn("Consensus level is below 100%. Compromised data sources should be removed.");
         let mostFrequent = 0;
         let type = "";
         if (typeof data[0] === 'object') {
@@ -204,7 +216,7 @@ export function checkConsensus(data, level=1.0) {
                     }
                 }
                 else {
-                    throw new TypeError("Primitive or object expected.");
+                    throw new TypeError("Primitive or object expected");
                 }
             }
             if (frequency > mostFrequent) {
@@ -213,12 +225,7 @@ export function checkConsensus(data, level=1.0) {
         }
 
         let consensus = mostFrequent / data.length;
-        if (consensus < level) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return (consensus >= level);
     }
     else {
         return true;
@@ -236,13 +243,16 @@ export function getConsensus(data, level=0.0) {
      * @return {Object} or {primitive} - Returns most frequent data entry if consensus level is reached, otherwise
      * throws an error.
      */
+    if (data.length < 1) {
+        throw new Error("No comparable data found");
+    }
+
     if (level > 1 || level < 0) {
-        throw "Invalid Consensus Level: Level must be between 0 and 1.";
+        throw new Error("Level must be between 0 and 1");
     }
 
     let unique = data.filter((v, i, a) => a.indexOf(v) === i);
     if (unique.length !== 1) {
-        console.warn("Consensus level is below 100%. Compromised data sources should be removed.");
         let mostFrequent = "";
         let highestFrequency = 0;
         let type = "";
@@ -269,7 +279,7 @@ export function getConsensus(data, level=0.0) {
                     }
                 }
                 else {
-                    throw new TypeError("Primitive or object expected.");
+                    throw new TypeError("Primitive or object expected");
                 }
             }
             if (frequency > highestFrequency) {
@@ -280,7 +290,7 @@ export function getConsensus(data, level=0.0) {
 
         let consensus = highestFrequency / data.length;
         if (consensus < level) {
-            throw "Consensus Error: Consensus unreached."
+            throw new Error("Consensus unreached");
         }
         else {
             return mostFrequent;
@@ -293,7 +303,7 @@ export function getConsensus(data, level=0.0) {
 
 // ================================================== //
 
-export async function makeDID(vk, method="dad") {
+export async function makeDid(vk, method="dad") {
     /** Creates and returns DID from bytes vk.
      *
      * @param {Uint8Array} vk - 32 byte verifier key from EdDSA (Ed25519) key pair.
@@ -309,7 +319,6 @@ export async function makeDID(vk, method="dad") {
     }
 
     catch (error) {
-        console.error(error);
         throw error;
     }
 }
@@ -326,15 +335,15 @@ export function extractDidParts(did, method="dad") {
      */
     let parts = did.split(":");
     if (parts.length !== 3) {
-        throw new Error("Invalid DID value.");
+        throw new Error("Invalid DID value");
     }
 
     if (parts[0] !== "did") {
-        throw new Error("Invalid DID identifier.");
+        throw new Error("Invalid DID identifier");
     }
 
     if (parts[1] !== method) {
-        throw new Error("Invalid DID method.");
+        throw new Error("Invalid DID method");
     }
 
     return parts[2];
@@ -345,7 +354,7 @@ export function extractDidParts(did, method="dad") {
 export async function generateKeyPair(seed=[]) {
     /** Uses libsodium to generate an ed25519 key pair.
      *
-     * @param {Uint8Array} seed - Optional byte array of seed.
+     * @param {Uint8Array} or {string} seed - Optional byte array or base64 encoded string of seed.
      *
      * @return {Array} - An array of format: [privateKey, publicKey].
      */
@@ -363,7 +372,6 @@ export async function generateKeyPair(seed=[]) {
     }
 
     catch (error) {
-        console.error(error);
         throw error;
     }
 }
@@ -375,7 +383,7 @@ export async function signResource(resource, sk) {
     /** Signs a resource with a private key.
      *
      * @param {string} resource - Stringified resource to be signed.
-     * @param {Uint8Array} sk - Byte array of private key.
+     * @param {Uint8Array} or {string} sk - Byte array or base64 encoded string of private key.
      *
      * @return {string} - Base64 encoded signature string.
      */
@@ -390,7 +398,6 @@ export async function signResource(resource, sk) {
     }
 
     catch (error) {
-        console.error(error);
         throw error;
     }
 }
@@ -405,19 +412,20 @@ export async function verify(signature, message, vk) {
      * @param {Uint8Array} vk - Byte array of verification key.
      *
      * @return {boolean} - Returns true if message signature can be verified against the verification key, otherwise
-     * returns false.
+     * raises an error.
      */
     await _sodium.ready;
     const sodium = _sodium;
 
     let msg = stringToBytes(message);
     try {
-        let signedResource = concatenateUint8Arrays(signature, message);
-        return sodium.crypto_sign_open(signedResource, vk);
+        let signedResource = concatenateUint8Arrays(signature, msg);
+        if ( sodium.crypto_sign_open(signedResource, vk)){
+            return true;
+        }
     }
 
     catch (error) {
-        console.error(error);
         throw error;
     }
 }
@@ -435,17 +443,14 @@ export async function verify64u(signature, message, vk) {
      * returns false.
      */
     let sig = await fromBase64(signature).catch(function (error) {
-        console.error(error);
         throw error;
     });
 
-    let verkey = await fromBase64(vk).catch(function (error) {
-        console.error(error);
+    let verkey = await fromBase64(vk, 1).catch(function (error) {
         throw error;
     });
 
     return await verify(sig, message, verkey).catch(function (error) {
-        console.error(error);
         throw error;
     });
 }
@@ -467,33 +472,30 @@ export async function toBase64(key) {
     }
 
     catch (error) {
-        console.error(error);
         throw error;
     }
 }
 
 // ================================================== //
 
-export async function fromBase64(key64u, padding=true) {
+export async function fromBase64(key64u, padding=2) {
     /** Converts a unicode base64 url-file safe string to a byte array.
      *
      * @param {string} key64u - Unicode base64 encoded key string.
+     * @param {int} padding - Integer of padding length.
      *
      * @return {Uint8Array} - Byte array of key.
      */
     await await _sodium.ready;
     const sodium = _sodium;
 
-    if (padding === true) {
-        key64u = key64u.substring(0, key64u.length -2);
-    }
+    key64u = key64u.substring(0, key64u.length - padding);
 
     try {
         return sodium.from_base64(key64u);
     }
 
     catch (error) {
-        console.error(error);
         throw error;
     }
 }
@@ -550,64 +552,54 @@ export async function keyInceptionEvent(options={}) {
     if ((currentKeyPair === undefined || currentKeyPair.length === 0) &&
         (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
         currentKeyPair = await generateKeyPair(currentSeed).catch(function (error) {
-            console.error(error);
             throw error;
         });
         preRotatedKeyPair = await generateKeyPair(preRotatedSeed).catch(function (error) {
-            console.error(error);
             throw error;
         });
     }
 
     else if (!(currentKeyPair === undefined || currentKeyPair.length === 0) &&
         (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
-        console.error("Missing Current Key Pair: Either supply both a current key pair and a pre-rotated key pair " +
-                    "or supply neither to generate new keys.");
-        return;
+        preRotatedKeyPair = await generateKeyPair(preRotatedSeed).catch(function (error) {
+            throw error;
+        });
     }
 
     else if ((currentKeyPair === undefined || currentKeyPair.length === 0) &&
         !(preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0)) {
-        console.error("Missing Pre-rotated Key Pair: Either supply both a current key pair and a pre-rotated key pair " +
-            "or supply neither to generate new keys.");
-        return;
+        currentKeyPair = await generateKeyPair(currentSeed).catch(function (error) {
+            throw error;
+        });
     }
 
     else if ((currentKeyPair.length !== 2 || preRotatedKeyPair.length !== 2)) {
-        console.error("Invalid Key Pairs: A key pair must be an array with the both the private and public keys. They " +
-                    "follow the format [private key, public key].");
-        return ;
+        throw new Error("Invalid key pairs");
     }
 
     else if ((currentKeyPair[0] instanceof Uint8Array !== true || currentKeyPair[0].length !== 64)) {
-        console.error("Invalid Key Pairs: The current private key must be a byte array of length 64.");
-        return;
+        throw new Error("Invalid current private key");
     }
 
     else if ((currentKeyPair[1] instanceof Uint8Array !== true || currentKeyPair[1].length !== 32)) {
-        console.error("Invalid Key Pairs: The current public key must be a byte array of length 32.");
-        return;
+        throw new Error("Invalid current public key");
     }
 
     else if ((preRotatedKeyPair[0] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 64)) {
-        console.error("Invalid Key Pairs: The pre-rotated private key must be a byte array of length 64.");
-        return;
+        throw new Error("Invalid pre-rotated private key");
     }
 
     else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[1].length !== 32)) {
-        console.error("Invalid Key Pairs: The pre-rotated public key must be a byte array of length 32.");
-        return;
+        throw new Error("Invalid pre-rotated public key");
     }
 
-    let did = await makeDID(currentKeyPair[1]);
+    let did = await makeDid(currentKeyPair[1]);
 
     if (post === true) {
         let ckSigner = await toBase64(currentKeyPair[1]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         let prkSigner = await toBase64(preRotatedKeyPair[1]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         let body = {
@@ -618,120 +610,98 @@ export async function keyInceptionEvent(options={}) {
         };
 
         let signature = await signResource(JSON.stringify(body), currentKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         signature = "signer=\"" + signature + "\"";
 
-        await batchPostHistory(signature, body, urls).then(function (response) {
-            console.log(response);
-        }).catch(function (error) {
-            console.error(error);
+        await batchPostHistory(signature, body, urls).catch(function (error) {
             throw error;
         });
     }
 
     if (saveCurrent === true) {
         let key = await toBase64(currentKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         if (storageCurrent.toLowerCase() === "local") {
             localStorage.setItem("CurrentPrivateKey", key);
-            console.log("Key saved to local storage.");
         }
 
         else if (storageCurrent.toLowerCase() === "session") {
             sessionStorage.setItem("CurrentPrivateKey", key);
-            console.log("Key saved to session storage.");
         }
 
         else if (storageCurrent.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "CurrentPrivateKey.txt");
-                console.log("Key saved to downloaded file CurrentPrivateKey.txt");
             }
 
             catch (error) {
-                console.error("Could Not Download Key File: " + error + ".");
-                throw "Could Not Download Key File: " + error + ".";
+                throw error;
             }
         }
 
         else {
-            console.error("Invalid Storage Location.");
-            throw "Invalid Storage Location"
+            throw new Error("Invalid storage location");
         }
     }
 
     if (savePreRotated === true) {
         let key = await toBase64(preRotatedKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         if (storagePreRotated.toLowerCase() === "local") {
             localStorage.setItem("PreRotatedPrivateKey", key);
-            console.log("Key saved to local storage.");
         }
 
         else if (storagePreRotated.toLowerCase() === "session") {
             sessionStorage.setItem("PreRotatedPrivateKey", key);
-            console.log("Key saved to session storage.");
         }
 
         else if (storagePreRotated.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "PreRotatedPrivateKey.txt");
-                console.log("Key saved to downloaded file PreRotatedPrivateKey.txt");
             }
 
             catch (error) {
-                console.error("Could Not Download Key File: " + error + ".");
-                throw "Could Not Download Key File: " + error + "."
+                throw error;
             }
         }
 
         else {
-            console.error("Invalid Storage Location.");
-            throw "Invalid Storage Location."
+            throw new Error("Invalid storage location");
         }
     }
 
     if (saveDid === true) {
         if (storageDid.toLowerCase() === "local") {
             localStorage.setItem("DID", did);
-            console.log("DID saved to local storage.");
         }
 
         else if (storageDid.toLowerCase() === "session") {
             sessionStorage.setItem("DID", did);
-            console.log("DID saved to session storage.");
         }
 
         else if (storageDid.toLowerCase() === "download") {
             try {
                 let blob = new Blob([did], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "DID.txt");
-                console.log("DID saved to downloaded file DID.txt");
             }
 
             catch (error) {
-                console.error("Could Not Download DID File: " + error + ".");
-                throw "Could Not Download DID File: " + error + "."
+                throw error;
             }
         }
 
         else {
-            console.error("Invalid Storage Location.");
-            throw "Invalid Storage Location."
+            throw new Error("Invalid storage location");
         }
     }
 
     if (showCurrent === true) {
         let pkey = await toBase64(currentKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         alert("Please save your current private key in a secure location:\n\n" + pkey);
@@ -739,7 +709,6 @@ export async function keyInceptionEvent(options={}) {
 
     if (showPreRotated === true) {
         let pkey = await toBase64(preRotatedKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         alert("Please save your pre-rotated private key in a secure location:\n\n" + pkey);
@@ -795,19 +764,16 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
 
     if (preRotatedKeyPair === undefined || preRotatedKeyPair.length === 0) {
         preRotatedKeyPair = await generateKeyPair(seed).catch(function (error) {
-            console.error(error);
             throw error;
         });
     }
 
     else if ((preRotatedKeyPair[0] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 64)) {
-        console.error("Invalid Key Pairs: The pre-rotated private key must be a byte array of length 64.");
-        return;
+        throw new Error("Invalid pre-rotated private key");
     }
 
     else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 32)) {
-        console.error("Invalid Key Pairs: The pre-rotated public key must be a byte array of length 32.");
-        return;
+        throw new Error("Invalid pre-rotated public key");
     }
 
 
@@ -815,14 +781,12 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
     await batchGetHistory(urls, did).then(function (response) {
         history = getConsensus(response, consensus);
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 
     let body = history.history;
     if (post === true) {
         let prkSigner = await toBase64(preRotatedKeyPair[1]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         body.changed = moment().format();
@@ -830,90 +794,76 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         body.signers.push(prkSigner);
 
         let oldSignature = await signResource(JSON.stringify(body), oldCurrentKey).catch(function (error) {
-            console.error(error);
             throw error;
         });
         let newSignature = await signResource(JSON.stringify(body), newCurrentKey).catch(function (error) {
-            console.error(error);
             throw error;
         });
         let signature = "signer=\"" + newSignature + "\"; rotation=\"" + oldSignature + "\"";
 
-        await batchPutHistory(signature, body, did, urls).then(function (response) {
-            console.log(response);
-        }).catch(function (error) {
-            console.error(error);
+        await batchPutHistory(signature, body, did, urls).catch(function (error) {
             throw error;
         });
     }
 
     if (saveCurrent === true) {
         let key = await toBase64(newCurrentKey).catch(function (error) {
-            console.error(error);
             throw error;
         });
         if (storageCurrent.toLowerCase() === "local") {
             localStorage.setItem("CurrentPrivateKey", key);
-            console.log("Key saved to local storage.");
         }
 
         else if (storageCurrent.toLowerCase() === "session") {
             sessionStorage.setItem("CurrentPrivateKey", key);
-            console.log("Key saved to session storage.");
         }
 
         else if (storageCurrent.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "CurrentPrivateKey.txt");
-                console.log("Key saved to downloaded file CurrentPrivateKey.txt");
             }
 
             catch (error) {
-                console.error("Could Not Download Key File: " + error + ".");
+                throw error;
             }
         }
 
         else {
-            console.error("Invalid Storage Location.");
+            throw new Error("Invalid storage location");
         }
     }
 
     if (savePreRotated === true) {
         let key = await toBase64(preRotatedKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         if (storagePreRotated.toLowerCase() === "local") {
             localStorage.setItem("PreRotatedPrivateKey", key);
-            console.log("Key saved to local storage.");
         }
 
         else if (storagePreRotated.toLowerCase() === "session") {
             sessionStorage.setItem("PreRotatedPrivateKey", key);
-            console.log("Key saved to session storage.");
         }
 
         else if (storagePreRotated.toLowerCase() === "download") {
             try {
                 let blob = new Blob([key], {type: "text/plain;charset=utf-8"});
                 fileSaver.saveAs(blob, "PreRotatedPrivateKey.txt");
-                console.log("Key saved to downloaded file PreRotatedPrivateKey.txt");
             }
 
             catch (error) {
-                console.error("Could Not Download Key File: " + error + ".");
+                throw error;
             }
         }
 
         else {
-            console.error("Invalid Storage Location.");
+            throw new Error("Invalid storage location");
         }
     }
 
     if (showCurrent === true) {
         let pkey = await toBase64(newCurrentKey).catch(function (error) {
-            console.error(error);
             throw error;
         });
         alert("Please save your current private key in a secure location:\n\n" + pkey);
@@ -921,7 +871,6 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
 
     if (showPreRotated === true) {
         let pkey = await toBase64(preRotatedKeyPair[0]).catch(function (error) {
-            console.error(error);
             throw error;
         });
         alert("Please save your pre-rotated private key in a secure location:\n\n" + pkey);
