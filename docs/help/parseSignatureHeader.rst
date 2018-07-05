@@ -39,13 +39,13 @@ Example
    const didery = require('didery');
 
    let signature = "signer='EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==';";
-   let result = parseSignatureHeader(signature);
+   let result = didery.parseSignatureHeader(signature);
    console.log(result);
    // {"signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw=="}
 
    signature = "signer='EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==';" +
                "rotation='QXqlf2WzYEqwxN1RBQRTFbOlBtvc6gZqlp54R47nov8j6fx8kAYdJXPlpFAFyrqfaNXRA5Q6vwzM9vbKGRWlCQ=='";
-   result = parseSignatureHeader(signature);
+   result = didery.parseSignatureHeader(signature);
    console.log(result);
    // {
    //   "signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==",
