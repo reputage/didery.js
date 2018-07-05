@@ -26,7 +26,7 @@ Second is an object containing the data to be posted. This data object should be
       "signer": integer representing the current key index,
       "signers": [old public key, ..., current public key, pre-rotated public key]
   }
-Third is a DID string. Fourth is a urls array parameter. This is an array of URL strings.
+Third is a did parameter that takes a DID string. Fourth is a urls array parameter that takes an array of URL strings.
 
 Return
 ======
