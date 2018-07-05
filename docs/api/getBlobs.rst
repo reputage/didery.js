@@ -1,7 +1,8 @@
 ########
 getBlobs
 ########
-This function uses fetch to hit the GET blobs endpoint of a didery server. This functions is asynchronous.
+This function uses fetch to hit the GET blobs endpoint of a didery server. The GET blobs endpoint returns encrypted
+private key blobs.This functions is asynchronous.
 
 Parameters
 ==========
