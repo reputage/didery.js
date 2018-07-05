@@ -16,8 +16,7 @@ signature can be obtained. If the same tag appears multiple times then only the 
 Each signature value is a doubly quoted string that contains the actual signature in Base64 url safe format. By
 default the signatures are EdDSA (Ed25519) which are 88 characters long (with two trailing pad bytes) that
 represent 64 byte EdDSA signatures. An optional tag name = "kind" with values "EdDSA" or "Ed25519" may be present
-that specifies the type of signature. All signatures within the header must be of the same kind. The two tag
-fields currently supported are "did" and "signer"
+that specifies the type of signature. All signatures within the header must be of the same kind.
 
 Parameters
 ==========
