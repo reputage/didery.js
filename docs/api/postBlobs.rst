@@ -10,18 +10,18 @@ Parameters
 postBlobs has two required parameters. First is a signature string that will be placed in the required signature header.
 This string should be of the format:
 ::
-'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";'
+  'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";'
 or:
 ::
-'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="; kind="ed25519"; ...'
+  'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="; kind="ed25519"; ...'
 
 Second is an object containing the data to be posted. This data object should be of the format:
 ::
-{
-    "blob": encrypted blob,
-    "changed": datetime string,
-    "id": DID string
-}
+  {
+      "blob": encrypted blob,
+      "changed": datetime string,
+      "id": DID string
+  }
 There is also an optional base URL parameter. This is a string of the server's base URL. The default base URL is the
 localhost at port 8080.
 
