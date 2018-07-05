@@ -1,7 +1,7 @@
 ########
 putBlobs
 ########
-This function uses fetch to hit the PUT blobs endpoint of a didery server. The POST history endpoint updates encrypted
+This function uses fetch to hit the PUT blobs endpoint of a didery server. The PUT blobs endpoint updates encrypted
 key blobs. The PUT endpoint should only be used to update the current key after key rotation and revocation events. Data
 put to the server will be verified against signatures. If any discrepancies are found the operation will fail. This
 function is asynchronous.
