@@ -1,8 +1,8 @@
 #########
 verify64u
 #########
-This function checks if a signature for a given message can be verified with a provided verification key. This function
-is asynchronous.
+This function uses libsodium to check if a signature for a given message can be verified with a provided verification
+key. This function is asynchronous.
 
 Parameters
 ==========
