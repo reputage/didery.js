@@ -47,7 +47,7 @@ Example
                "rotation='QXqlf2WzYEqwxN1RBQRTFbOlBtvc6gZqlp54R47nov8j6fx8kAYdJXPlpFAFyrqfaNXRA5Q6vwzM9vbKGRWlCQ=='";
    result = parseSignatureHeader(signature);
    console.log(result);
-   /* {
-        "signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==",
-        "rotation":"QXqlf2WzYEqwxN1RBQRTFbOlBtvc6gZqlp54R47nov8j6fx8kAYdJXPlpFAFyrqfaNXRA5Q6vwzM9vbKGRWlCQ=="
-      } */
+   // {
+   //   "signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==",
+   //   "rotation":"QXqlf2WzYEqwxN1RBQRTFbOlBtvc6gZqlp54R47nov8j6fx8kAYdJXPlpFAFyrqfaNXRA5Q6vwzM9vbKGRWlCQ=="
+   // }
