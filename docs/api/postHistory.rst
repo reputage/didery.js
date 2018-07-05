@@ -1,7 +1,8 @@
 ###########
 postHistory
 ###########
-This function uses fetch to hit the POST history endpoint of a didery server. This function is asynchronous.
+This function uses fetch to hit the POST history endpoint of a didery server. Data posted to the server will be verified
+against signatures. If any discrepancies are found the operation will fail.This function is asynchronous.
 
 Parameters
 ==========
@@ -17,7 +18,7 @@ Second is an object containing the data to be posted. This data object should be
 ::
   {
       "id": DID string,
-      "changed": Datetime string,
+      "changed": datetime string,
       "signer": integer representing the current key index,
       "signers": [current public key, pre-rotated public key]
   }
