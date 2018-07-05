@@ -56,7 +56,7 @@ export function postHistory(signature, data, baseURL="http://127.0.0.1:8080/") {
     /** Hits the POST history endpoint of a didery server and returns the result of the ensuing promise.
      *
      * @param {string} signature - String of signature for signature header (format of
-     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="').
+     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";').
      * @param {Object} data - JSON of data to pe posted to server.
      * @param {string} baseURL - Optional string of server's base URL.
      *
