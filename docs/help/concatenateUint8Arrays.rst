@@ -12,6 +12,8 @@ Return
 ======
 concatenateUint8Arrays returns a newly concatenated Uint8Array.
 
+Example
+=======
 .. code-block:: javascript
 
   const didery = require('didery');
