@@ -16,7 +16,7 @@ format:
       "name": name string,
       "port": port string
   }
-Second is a urls array parameter that takes an array of URL strings.
+Second is a urls parameter that takes an array of URL strings.
 
 Return
 ======

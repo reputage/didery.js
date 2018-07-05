@@ -22,7 +22,7 @@ Second is an object containing the data to be posted. This data object should be
       "changed": "2000-01-01T00:00:00+00:00",
       "id": "did:dad:Qt27fThWoNZsa88VrTkep6H-4HA8tr54sHON1vWl6FE="
   }
-Third is a did parameter that takes a DID string. Fourth is a urls array parameter that takes an array of URL strings.
+Third is a did parameter that takes a DID string. Fourth is a urls parameter that takes an array of URL strings.
 
 Return
 ======

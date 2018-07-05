@@ -22,7 +22,7 @@ Second is an object containing the data to be posted. This data object should be
       "changed": datetime string,
       "id": DID string
   }
-Third is a urls array parameter that takes an array of URL strings.
+Third is a urls parameter that takes an array of URL strings.
 
 Return
 ======

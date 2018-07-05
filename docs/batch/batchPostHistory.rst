@@ -23,7 +23,7 @@ Second is an object containing the data to be posted. This data object should be
       "signer": integer representing the current key index,
       "signers": [current public key, pre-rotated public key]
   }
-Third is a urls array parameter that takes an array of URL strings.
+Third is a urls parameter that takes an array of URL strings.
 
 Return
 ======
