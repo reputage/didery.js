@@ -9,7 +9,7 @@ Parameters
 ==========
 getConsensus takes an array of data entries. Data entries can be objects or primitives, but should all be of the same
 type. There is also an optional consensus level parameter. This should be a float between 0 and 1. The given float
-represents the consensus threshold that must be surpassed in order to return true.
+represents the consensus threshold that must be surpassed in order to return true. The default consensus is 1.
 
 Return
 ======

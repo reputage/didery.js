@@ -6,7 +6,8 @@ This function creates a DID string from a provided public key. DID's can be crea
 Parameters
 ==========
 makeDid takes one Uint8Array of a 32 byte verifier key from EdDSA (Ed25519) key pair. There is also an optional
-parameter for the DID method. This is a string that will be saved in the DID under the DID method.
+parameter for the DID method. This is a string that will be saved in the DID under the DID method. The default DID
+method is "dad".
 
 Return
 ======
