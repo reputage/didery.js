@@ -5,8 +5,8 @@ This function uses libsodium to generate an ed25519 key pair. This function is a
 
 Parameters
 ==========
-generateKeyPair has one optional seed parameter. This seed should be 32 bytes and can be either a Uint8Array or a base64
-encoded string.
+generateKeyPair has one optional seed parameter. This seed should be 32 bytes and can be either a Uint8Array or a
+string.
 
 Return
 ======
@@ -31,7 +31,7 @@ Example
    seed = new Uint8Array([167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,159,167,151,183,94,25,
    189,11,128,151,39,237]);
    didery.generateKeyPair(seed).then(function(response) {
-
+        console.log(response);
    });
    // [Uint8Array[167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,159,167,151,183,94,25,189,11,
    //             128,151,39,237,178,213,80,122,33,83,170,168,209,242,204,97,178,93,243,193,162,247,179,79,143,4,132,2,

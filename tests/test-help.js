@@ -392,9 +392,9 @@ it('Test signResource', async function () {
     expected = "h6n48a7RgjHJNETKw82SWaNacYuS04ddc_lZtlijlG071GH0_90T2hyaprcBt2XM7VfKDjp2OnSteNNptFazDQ==";
     assert.equal(await signResource(resource, sk), expected);
 
-    resource = "{\"test\":\"test\"";
+    resource = "{\"test\":\"test\"}";
     sk = "kAzBIalx6KT22M0CJyw2RqDibDiR0wwPXl5he6SDOIMph7cj2l2W7zigQ2vneaf1";
-    expected = "LpaFIprQGe0SSo6jUlSTrqaQsjps2mRybXSMLDB4NOpUP-OxCfV-BcDQ5gfNOorkI0U2eeaoU7zqH-6yiAn-Bw==";
+    expected = "vSx_vvioFGre8WQYBuwTbeZZEMVrpa6ehuhaflZIGzwdC4tBZOu3QsWh6M013rkyXV1-61Fh7M2qZN3tpWsCBQ==";
     assert.equal(await signResource(resource, sk), expected);
 
     resource = "{}";
@@ -418,11 +418,11 @@ it('Test signResource', async function () {
     expected = "mu7U-ku9bGeksbRYXqWZIJciVTVdcedBgmeXieiADvK0R95NissWICIMBAjzDIwOu_7yIjKMqPODGpEbNcCpBw==";
     assert.equal(await signResource(resource, sk), expected);
 
-    resource = "{\"test\":\"test\"";
+    resource = "{\"test\":\"test\"}";
     sk = new Uint8Array([167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,159,167,151,183,
         94,25,189,11,128,151,39,237,178,213,80,122,33,83,170,168,209,242,204,97,178,93,243,193,162,247,179,79,143,4,132,
         2,32,133,243,119,209,249,189,67]);
-    expected = "ZWI1uBFIYgBXz8QOw9_KE8VbDj_wtb2GxhCKP2WDIFoguB5ZAQ6uvLPoMge7CVJ4o7dJIgKlukrr2i6Q9KOXDQ==";
+    expected = "Sr0U_VLeXIxVgzjvFt0syudWw39ox3Yn2MAJQ5oNiUwIpHY_BwlJzM5R2UE81rxi2d_fkJs-uydWM8uoOW86Ag==";
     assert.equal(await signResource(resource, sk), expected);
 });
 

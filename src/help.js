@@ -353,7 +353,7 @@ export function extractDidParts(did, method="dad") {
 export async function generateKeyPair(seed=[]) {
     /** Uses libsodium to generate an ed25519 key pair.
      *
-     * @param {Uint8Array} or {string} seed - Optional byte array or base64 encoded string of seed.
+     * @param {Uint8Array} or {string} seed - Optional byte array or string of seed.
      *
      * @return {Array} - An array of format: [privateKey, publicKey].
      */
@@ -382,7 +382,7 @@ export async function signResource(resource, sk) {
     /** Signs a resource with a private key.
      *
      * @param {string} resource - Stringified resource to be signed.
-     * @param {Uint8Array} or {string} sk - Byte array or base64 encoded string of private key.
+     * @param {Uint8Array} or {string} sk - Byte array or un-encoded string of private key.
      *
      * @return {string} - Base64 encoded signature string.
      */
