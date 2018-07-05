@@ -3,7 +3,7 @@ postBlobs
 #########
 This function uses fetch to hit the POST blobs endpoint of a didery server. The POST blobs endpoint saves new encrypted
 private key blobs. Data posted to the server will be verified against signatures. If any discrepancies are found the
-operation will fail.This function is asynchronous.
+operation will fail. This function is asynchronous.
 
 Parameters
 ==========
