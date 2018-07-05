@@ -1,7 +1,8 @@
 ##########
 getHistory
 ##########
-This function uses fetch to hit the GET history endpoint of a didery server. This functions is asynchronous.
+This function uses fetch to hit the GET history endpoint of a didery server. The GET history endpoint returns key
+histories. This functions is asynchronous.
 
 Parameters
 ==========

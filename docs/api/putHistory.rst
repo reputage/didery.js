@@ -1,9 +1,10 @@
 ##########
 putHistory
 ##########
-This function uses fetch to hit the PUT history endpoint of a didery server. The PUT endpoint should only be used for
-key rotation and revocation events. Data put to the server will be verified against signatures and old key history. If
-any discrepancies are found the operation will fail. This function is asynchronous.
+This function uses fetch to hit the PUT history endpoint of a didery server. The POST history endpoint updates key
+histories The PUT endpoint should only be used for key rotation and revocation events. Data put to the server will be
+verified against signatures and old key history. If any discrepancies are found the operation will fail. This function
+is asynchronous.
 
 Parameters
 ==========
