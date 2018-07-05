@@ -8,3 +8,10 @@ associated with the different types of functions provided in the dideryJS client
 - **Help** - Cryptographic and general functions
 - **API** - Functions used to interface with a didery api
 - **Batch** - Functions used to interface with multiple didery api's at once
+
+.. toctree::
+   :caption: Table of Contents
+
+   help
+   api
+   batch
