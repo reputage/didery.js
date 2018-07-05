@@ -29,11 +29,6 @@ Example
   console.log(bytes);
   // Uint8Array[72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33]
   
-  string = "Hello World!";
-  bytes = didery.stringToBytes(string);
-  console.log(bytes);
-  // Uint8Array[72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33]
-  
   string = "brød";
   bytes = didery.stringToBytes(string);
   console.log(bytes);
