@@ -10,7 +10,7 @@ toBase64 takes one Uint8Array.
 
 Return
 ======
-Returns a promise that when fulfilled returns a base64 encoded string.
+toBase64 returns a promise that when fulfilled returns a base64 encoded string.
 
 Example
 =======
