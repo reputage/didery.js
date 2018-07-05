@@ -404,7 +404,7 @@ m.render(document.body,
                     m("div", {class: "field"},
                         m("label", "Current Key Pair ",
                             m("span[data-content=These are optional base64 encoded key strings. The first field is a " +
-                                "for a 64 bit private key, and the second field is for a 32 bit public key. If both " +
+                                "for a 64 byte private key, and the second field is for a 32 byte public key. If both " +
                                 "keys are provided, the key pair will be used as your current key pair. If used, both " +
                                 "keys must be provided.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                 m("i", {class: "icon question circle outline"}))),
@@ -421,7 +421,7 @@ m.render(document.body,
                     m("div", {class: "field"},
                         m("label", "Pre-rotated Key Pair ",
                             m("span[data-content=These are optional base64 encoded key strings. The first field is a " +
-                                "for a 64 bit private key, and the second field is for a 32 bit public key. If both " +
+                                "for a 64 byte private key, and the second field is for a 32 byte public key. If both " +
                                 "keys are provided, the key pair will be used as your pre-rotated key pair. If used, both " +
                                 "keys must be provided.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                 m("i", {class: "icon question circle outline"}))),
@@ -601,7 +601,7 @@ m.render(document.body,
                 m("form", {class: "ui form", action: "#", onsubmit: submitRotation},
                     m("div", {class: "required field"},
                         m("label", "Old Private Key ",
-                            m("span[data-content=This is the 64 bit, base64 encoded string of your current private key. This key will " +
+                            m("span[data-content=This is the 64 byte, base64 encoded string of your current private key. This key will " +
                                 "no longer be usable after the rotation event.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                 m("i", {class: "icon question circle outline"}))),
                         m("input", {id: "rotate-old-private-key",
@@ -609,7 +609,7 @@ m.render(document.body,
                             placeholder: "Base64 Encoded Private Key ..."})),
                     m("div", {class: "required field"},
                         m("label", "New Private Key ",
-                            m("span[data-content=This is the 64 bit, base64 encoded string of your pre-rotated private key. This key will " +
+                            m("span[data-content=This is the 64 byte, base64 encoded string of your pre-rotated private key. This key will " +
                                 "become your new current key after the rotation event.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                 m("i", {class: "icon question circle outline"}))),
                         m("input", {id: "rotate-new-private-key",
@@ -634,7 +634,7 @@ m.render(document.body,
                     m("div", {class: "field"},
                         m("label", "Pre-rotated Key Pair ",
                             m("span[data-content=These are optional base64 encoded key strings. The first field is a " +
-                                "for a 64 bit private key, and the second field is for a 32 bit public key. If both " +
+                                "for a 64 byte private key, and the second field is for a 32 byte public key. If both " +
                                 "keys are provided, the key pair will be used as your pre-rotated key pair. If used, both " +
                                 "keys must be provided.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                 m("i", {class: "icon question circle outline"}))),
