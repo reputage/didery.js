@@ -23,11 +23,11 @@ Second is an object containing the data to be posted. This data object should be
       "signer": integer representing the current key index,
       "signers": [current public key, pre-rotated public key]
   }
-Third is also a urls array parameter. This is an array of URL strings.
+Third is a urls array parameter. This is an array of URL strings.
 
 Return
 ======
-batchPostHistory returns a promise that when fulfilled returns the server's response to the fetch operation.
+batchPostHistory returns a promise that when fulfilled returns the servers' responses to the fetch operations.
 
 Example
 =======

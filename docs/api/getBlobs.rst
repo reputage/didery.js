@@ -12,7 +12,7 @@ default DID string is an empty string. If no DID string is provided, getBlobs wi
 
 Return
 ======
-get Blobs returns a promise that when fulfilled returns the server's response to the fetch operation.
+getBlobs returns a promise that when fulfilled returns the server's response to the fetch operation.
 
 Example
 =======
