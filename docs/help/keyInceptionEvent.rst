@@ -16,9 +16,9 @@ follows:
 +------------------+---------------------------------------------------------------------------------------------------+
 |      Option      |                                            Description                                            |
 +==================+===================================================================================================+
-|currentSeed       |A 32 byte Uint8Array or string used as seed for current key pair generation.                       |
+|currentSeed       |A 32 byte Uint8Array or string used as the seed for current key pair generation.                   |
 +------------------+---------------------------------------------------------------------------------------------------+
-|preRotatedSeed    |A 32 byte Uint8Array or string used as seed for pre-rotated key pair generation.                   |
+|preRotatedSeed    |A 32 byte Uint8Array or string used as the seed for pre-rotated key pair generation.               |
 +------------------+---------------------------------------------------------------------------------------------------+
 |currentKeyPair    |An array with a 64 byte Uint8Array of a private key and 32 byte Uint8Array of a public key. This   |
 |                  |key pair will be used as the current key pair.                                                     |
@@ -26,7 +26,8 @@ follows:
 |preRotatedKeyPair |An array with a 64 byte Uint8Array of a private key and 32 byte Uint8Array of a public key. This   |
 |                  |key pair will be used as the pre-rotated key pair.                                                 |
 +------------------+---------------------------------------------------------------------------------------------------+
-|post              |A boolean for whether or not key data should be posted to a didery server.                         |
+|post              |A boolean for whether or not key data should be posted to a didery server. If true at least one url|
+|                  |must be provided.                                                                                  |
 +------------------+---------------------------------------------------------------------------------------------------+
 |urls              |An array of comma separated server URLs strings.                                                   |
 +------------------+---------------------------------------------------------------------------------------------------+

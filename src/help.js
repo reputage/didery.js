@@ -775,19 +775,19 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         throw new Error("Invalid pre-rotated public key");
     }
 
-
-    let history = {};
-    await batchGetHistory(urls, did).then(function (response) {
-        history = getConsensus(response, consensus);
-    }).catch(function (error) {
-        throw error;
-    });
-
-    let body = history.history;
     if (post === true) {
         let prkSigner = await toBase64(preRotatedKeyPair[1]).catch(function (error) {
             throw error;
         });
+
+        let history = {};
+        await batchGetHistory(urls, did).then(function (response) {
+            history = getConsensus(response, consensus);
+        }).catch(function (error) {
+            throw error;
+        });
+
+        let body = history.history;
         body.changed = moment().format();
         body.signer += 1;
         body.signers.push(prkSigner);
