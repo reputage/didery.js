@@ -120,7 +120,7 @@ export function parseSignatureHeader(signature) {
      *
      * @return {Object} - Object with format:
      *  {
-     *    "String of parsed tag: "String of parsed value",
+     *    "String of parsed tag": "String of parsed value",
      *    ...
      *  }
      */
