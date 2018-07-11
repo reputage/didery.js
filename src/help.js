@@ -771,7 +771,7 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         throw new Error("Invalid pre-rotated private key");
     }
 
-    else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 32)) {
+    else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[1].length !== 32)) {
         throw new Error("Invalid pre-rotated public key");
     }
 
@@ -798,7 +798,7 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         let newSignature = await signResource(JSON.stringify(body), newCurrentKey).catch(function (error) {
             throw error;
         });
-        let signature = "signer=\"" + newSignature + "\"; rotation=\"" + oldSignature + "\"";
+        let signature = "signer=\"" + oldSignature + "\"; rotation=\"" + newSignature + "\"";
 
         await batchPutHistory(signature, body, did, urls).catch(function (error) {
             throw error;
