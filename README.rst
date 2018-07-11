@@ -3,8 +3,7 @@
 
 |Docs|
 
-.. |Docs| image:: //readthedocs.org/projects/dideryjs/badge/?version=latest
-   :target: https://dideryjs.readthedocs.io/en/latest/?badge=latest
+.. |Docs| image:: https://readthedocs.org/projects/dideryjs/badge/?version=latest
    :alt: Documentation Status
 
 .. contents:: Table of Contents
