@@ -1,6 +1,11 @@
 .. image:: https://github.com/reputage/didery.js/blob/dev/logo/didery.png
    :alt: Didery logo
 
+|Docs|
+
+.. |Docs| image:: //readthedocs.org/projects/dideryjs/badge/?version=latest
+   :alt: Documentation Status
+
 .. contents:: Table of Contents
 
 Overview
