@@ -9,6 +9,7 @@ Batch
    batchGetHistory
    batchPostHistory
    batchPutHistory
+   batchDeleteHistory
    batchGetBlobs
    batchPostBlobs
    batchPutBlobs

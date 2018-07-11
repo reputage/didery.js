@@ -32,6 +32,7 @@ Table of Contents
    - `getHistory <https://github.com/reputage/didery.js/blob/dev/docs/api/getHistory.rst>`_
    - `postHistory <https://github.com/reputage/didery.js/blob/dev/docs/api/postHistory.rst>`_
    - `putHistory <https://github.com/reputage/didery.js/blob/dev/docs/api/putHistory.rst>`_
+   - `deleteHistory <https://github.com/reputage/didery.js/blob/dev/docs/api/deleteHistory.rst>`_
    - `getBlobs <https://github.com/reputage/didery.js/blob/dev/docs/api/getBlobs.rst>`_
    - `postBlobs <https://github.com/reputage/didery.js/blob/dev/docs/api/postBlobs.rst>`_
    - `putBlobs <https://github.com/reputage/didery.js/blob/dev/docs/api/putBlobs.rst>`_
@@ -44,6 +45,7 @@ Table of Contents
    - `batchGetHistory <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchGetHistory.rst>`_
    - `batchPostHistory <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchPostHistory.rst>`_
    - `batchPutHistory <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchPutHistory.rst>`_
+   - `batchDeleteHistory <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchDeleteHistory.rst>`_
    - `batchGetBlobs <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchGetBlobs.rst>`_
    - `batchPostBlobs <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchPostBlobs.rst>`_
    - `batchPutBlobs <https://github.com/reputage/didery.js/blob/dev/docs/batch/batchPutBlobs.rst>`_
