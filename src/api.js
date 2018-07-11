@@ -17,7 +17,7 @@ export function getHistory(baseURL="http://127.0.0.1:8080/", did="") {
     /** Hits the GET history endpoint of a didery server and returns the result of the ensuing promise.
      *
      * @param {string} baseURL - Optional string of server's base URL.
-     * @param {string} did - Optional string of did (used to retrieve a single history entry).
+     * @param {string} did - Optional string of DID (used to retrieve a single history entry).
      *
      * @return {string} or {Object} - Result of a fetch operation.
      */
@@ -85,12 +85,13 @@ export function postHistory(signature, data, baseURL="http://127.0.0.1:8080/") {
 // ================================================== //
 
 export function putHistory(signature, data, did, baseURL="http://127.0.0.1:8080/") {
-    /** Hits the POST history endpoint of a didery server and returns the result of the ensuing promise.
+    /** Hits the PUT history endpoint of a didery server and returns the result of the ensuing promise.
      *
      * @param {string} signature - String of signature for signature header (format of
      * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";
-     * rotation="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="').
+     * rotation="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";').
      * @param {Object} data - JSON of data to pe posted to server.
+     * @param {string} did - String of DID.
      * @param {string} baseURL - Optional string of server's base URL.
      *
      * @return {Object} - Result of a fetch operation.
@@ -117,11 +118,44 @@ export function putHistory(signature, data, did, baseURL="http://127.0.0.1:8080/
 
 // ================================================== //
 
+export function deleteHistory(signature, data, did, baseURL="http://127.0.0.1:8080/") {
+    /** Hits the DELETE history endpoint of a didery server and returns the result of the ensuing promise.
+     *
+     * @param {string} signature - String of signature for signature header (format of
+     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="';).
+     * @param {Object} data - JSON of verification data.
+     * @param {string} did - String of DID.
+     * @param {string} baseURL - Optional string of server's base URL.
+     *
+     * @return {Object} - Result of a fetch operation.
+     */
+    let fullURL = baseURL.replace(/\/$/, "") + "/history/" + did;
+    return fetch(fullURL, {
+        body: JSON.stringify(data),
+        headers: {
+            'signature': signature,
+            'content-type': 'application/json'
+        },
+        method: 'DELETE'
+    }).then(function(response) {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
+}
+
+// ================================================== //
+
 export function getBlobs(baseURL="http://127.0.0.1:8080/", did="") {
     /** Hits the GET blobs endpoint of a didery server and returns the result of the ensuing promise.
      *
      * @param {string} baseURL - Optional string of server's base URL.
-     * @param {string} did - Optional string of did (used to retrieve a single blob entry).
+     * @param {string} did - Optional string of DID (used to retrieve a single blob entry).
      *
      * @return {string} or {Object} - Result of a fetch operation.
      */
@@ -157,7 +191,7 @@ export function postBlobs(signature, data, baseURL="http://127.0.0.1:8080/") {
     /** Hits the POST blobs endpoint of a didery server and returns the result of the ensuing promise.
      *
      * @param {string} signature - String of signature for signature header (format of
-     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="').
+     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";').
      * @param {Object} data - JSON of data to be posted to server.
      * @param {string} baseURL - Optional string of server's base URL.
      *
@@ -189,10 +223,10 @@ export function putBlobs(signature, data, did, baseURL="http://127.0.0.1:8080/")
     /** Hits the PUT blobs endpoint of a didery server and returns the result of the ensuing promise.
      *
      * @param {string} signature - String of signature for signature header (format of
-     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg=="').
+     * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";').
      * @param {Object} data - JSON of data to be posted to server.
      * @param {string} baseURL - Optional string of server's base URL.
-     * @param {string} did - String of did of blob to be edited.
+     * @param {string} did - String of DID of blob to be edited.
      *
      * @return {Object} - Result of a fetch operation.
      */
@@ -364,13 +398,15 @@ export function getErrors(baseURL="http://127.0.0.1:8080/") {
     });
 }
 
-export async function subscribeHistory(baseURL="http://127.0.0.1:8080", did="") {
+// ================================================== //
+
+//export async function subscribeHistory(baseURL="http://127.0.0.1:8080", did="") {
     /** Subscribes to history server sent events from a didery server.
      *
      * @param {string} baseURL - Optional string of server's base URL.
-     * @param {string} did - Optional string of did (used to subscribe to a single key history).
+     * @param {string} did - Optional string of DID (used to subscribe to a single key history).
      */
-    let fullURL = baseURL.replace(/\/$/, "") + "/stream/history";
+    /*let fullURL = baseURL.replace(/\/$/, "") + "/stream/history";
     if (did !== "") {
         fullURL += "/" + did;
     }
@@ -394,8 +430,8 @@ export async function subscribeHistory(baseURL="http://127.0.0.1:8080", did="") 
                 console.error("Connection failed.");
                 throw new Error("Connection to " + fullURL + " failed.");
         }
-    }
-}
+    };
+}*/
 
 // ================================================== //
 //                        EOF                         //

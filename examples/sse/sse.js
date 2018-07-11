@@ -48,14 +48,19 @@ let subscribe = function(e) {
     };
 
     eventSource.onopen = function(e) {
-        console.log("Connecting to: " + fullURL + ".");
+        console.log("Starting subscription to " + fullURL + ".");
     };
 
     eventSource.onerror = function(e) {
-        if (e.readyState === EventSource.CLOSED) {
-            console.error("Connection to: " + fullURL + " was lost.");
+        e = e || event;
+        switch( e.target.readyState ){
+            case EventSource.CONNECTING:
+                console.log("Reconnecting to " + fullURL + ".");
+                break;
+            case EventSource.CLOSED:
+                console.error("Connection failed.");
+                throw new Error("Connection to " + fullURL + " failed.");
         }
-        console.log("Reconnecting to: " + fullURL + ".");
     };
 };
 
