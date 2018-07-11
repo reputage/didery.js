@@ -32,14 +32,14 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
+   ];
    let data = {
        "changed": "2000-01-01T00:00:00+00:00",
        "host_address": "127.0.0.1",
        "main": true,
        "name": "alpha",
        "port": "7541"
-   }
+   };
    didery.batchPostRelays(data, urls).then(function (response) {
         // Do something with response
    }).catch(function (error) {

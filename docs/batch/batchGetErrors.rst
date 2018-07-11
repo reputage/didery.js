@@ -22,7 +22,7 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
+   ];
    didery.batchGetErrors(baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {

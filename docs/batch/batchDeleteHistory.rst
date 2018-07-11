@@ -36,12 +36,12 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
+   ];
    let signature = 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";' +
                    'rotation="h6n48a7RgjHJNETKw82SWaNacYuS04ddc_lZtlijlG071GH0_90T2hyaprcBt2XM7VfKDjp2OnSteNNptFazDQ==";';
    let data = {
         "id": "did:dad:Ymx_0Ri3Lnuun-bvG_cA32v0Go3KMRZ79eQ-AUQK4ms="
-   }
+   };
    didery.batchDeleteHistory(signature, data, urls).then(function (response) {
         // Do something with response
    }).catch(function (error) {

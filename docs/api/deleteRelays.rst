@@ -20,7 +20,7 @@ Example
    const didery = require('didery');
 
    let baseURL = "http://myDideryServer.com";
-   let uid = "1"
+   let uid = "1";
    didery.deleteRelays(uid, baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {

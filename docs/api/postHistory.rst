@@ -46,7 +46,7 @@ Example
             "Ymx_0Ri3Lnuun-bvG_cA32v0Go3KMRZ79eQ-AUQK4ms=",
             "8qOLfvSJfuDX2YjKh_BAUwSRD-TnDLhEpn9zP7cwf6Q="
         ]
-   }
+   };
    didery.postHistory(signature, data, baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {

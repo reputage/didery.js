@@ -22,8 +22,8 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
-   let uid = "1"
+   ];
+   let uid = "1";
    didery.batchDeleteRelays(uid, urls).then(function (response) {
         // Do something with response
    }).catch(function (error) {

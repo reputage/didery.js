@@ -25,7 +25,7 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
+   ];
    didery.batchGetHistory(urls).then(function (response) {
         // Do something with response
    }).catch(function (error) {
@@ -36,8 +36,8 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
-   let did = "did:dad:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U="
+   ];
+   let did = "did:dad:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U=";
    didery.batchGetHistory(urls, did).then(function (response) {
         // Do something with response
    }).catch(function (error) {

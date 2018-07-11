@@ -37,7 +37,7 @@ Example
    let signature = 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";';
    let data = {
         "id": "did:dad:Ymx_0Ri3Lnuun-bvG_cA32v0Go3KMRZ79eQ-AUQK4ms="
-   }
+   };
    didery.deleteHistory(signature, data, baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {
