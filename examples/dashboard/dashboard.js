@@ -369,8 +369,7 @@ let submitRotation = async function(e) {
         $('#rotate-success').removeClass("hidden");
     }
 };
-// ================================================== //
-//                       MAIN                         //
+
 // ================================================== //
 
 m.render(document.body,
