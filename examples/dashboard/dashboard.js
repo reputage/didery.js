@@ -11,6 +11,8 @@
 
 import 'babel-polyfill';
 import * as didery from '../../src/index.js';
+import {signResource} from "../../src";
+import {deleteHistory} from "../../src/api";
 const m = require('mithril');
 
 // ================================================== //
@@ -372,6 +374,62 @@ let submitRotation = async function(e) {
 
 // ================================================== //
 
+let submitDeletion = async function(e) {
+    e.preventDefault();
+    $('.error').removeClass("error");
+
+    if (!$('#delete-fail').hasClass("hidden")) {
+        $('#delete-fail').addClass("hidden");
+    }
+
+    if (!$('#delete-success').hasClass("hidden")) {
+        $('#delete-success').addClass("hidden");
+    }
+
+    let key = await didery.fromBase64($('#delete-current-private-key').val());
+    let did = $('#delete-did').val();
+    let urls = $('#delete-urls').val();
+
+    if (key.length === 0) {
+        $('#delete-current-private-key').parent().addClass("error");
+        $('#delete-fail-message').text("Error: Missing required field Old Private Key.");
+        $('#delete-fail').removeClass("hidden");
+        return;
+    }
+
+    if (did === "") {
+        $('#delete-did').parent().addClass("error");
+        $('#delete-fail-message').text("Error: Missing required field DID.");
+        $('#delete-fail').removeClass("hidden");
+        return;
+    }
+
+    if (urls === "") {
+        $('#delete-urls').parent().addClass("error");
+        $('#delete-fail-message').text("Error: Missing required field DID.");
+        $('#delete-fail').removeClass("hidden");
+        return;
+    }
+
+    let data = {"id": did};
+    let signature = await signResource(JSON.stringify(data), key).catch(function (error) {
+        $('#delete-fail-message').text(error);
+        $('#delete-fail').removeClass("hidden");
+    });
+    urls = urls.split(',');
+    signature = "signer=\"" + signature + "\";";
+    await didery.batchDeleteHistory(signature, data, did, urls).catch(function (error) {
+        $('#delete-fail-message').text(error);
+        $('#delete-fail').removeClass("hidden");
+    });
+
+    if ($('#delete-fail').hasClass("hidden")) {
+        $('#delete-success').removeClass("hidden");
+    }
+};
+
+// ================================================== //
+
 m.render(document.body,
     m("div", {class: "ui container"},
         m("div", {class: "ui top attached tabular menu"},
@@ -380,7 +438,13 @@ m.render(document.body,
                 m("div", "Key Inception")),
             m("a[data-tab=rotate]", {class: "item"},
                 m("i", {class: "sync alternate icon"}),
-                m("div", "Key Rotation"))),
+                m("div", "Key Rotation")),
+            m("a[data-tab=revoke]", {class: "item"},
+                m("i", {class: "times circle icon"}),
+                m("div", "Key Revocation")),
+            m("a[data-tab=delete]", {class: "item"},
+                m("i", {class: "trash icon"}),
+                m("div", "Key Deletion"))),
         m("div[data-tab=incept]", {class: "ui bottom attached tab segment active"},
             m("div", {class: "ui container segment"},
                 m("form", {class: "ui form", action: "#", onsubmit: submitInception},
@@ -774,7 +838,49 @@ m.render(document.body,
                 m("div", {id: "rotate-fail", class: "ui negative message hidden"},
                     m("i", {class: "close icon"}),
                     m("div", {class: "header"}, "Key Rotation Failure"),
-                    m("p", {id: "rotate-fail-message"}))))));
+                    m("p", {id: "rotate-fail-message"})))),
+        m("div[data-tab=revoke]", {class: "ui bottom attached tab segment"},
+            m("div", {class: "ui container segment"})),
+        m("div[data-tab=delete]", {class: "ui bottom attached tab segment"},
+            m("div", {class: "ui container segment"},
+                m("form", {class: "ui form", action: "#", onsubmit: submitDeletion},
+                    m("div", {class: "required field"},
+                        m("label", "Current Private Key ",
+                            m("span[data-content=This is the 64 byte, base64 encoded string of your current private key. This key will " +
+                                "no longer be usable after the deletion event.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "delete-current-private-key",
+                            type: "text",
+                            placeholder: "Base64 Encoded Private Key ..."})),
+                    m("div", {class: "required field"},
+                        m("label", "DID ",
+                            m("span[data-content=This is the decentralized identifier string associated with your key " +
+                                "history.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "delete-did",
+                            type: "text",
+                            placeholder: "DID ..."})),
+                    m("div", {class: "required field"},
+                        m("label", "URL's ",
+                            m("span[data-content=This is a list of comma separated urls. Your key history will " +
+                                "be posted to each url in this list.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("textarea", {id:"delete-urls",
+                            rows: 5,
+                            placeholder: "URL's (Comma Separated) ..."})),
+                    m("div", {class: "ui segment"},
+                        m("p", "Note: Deletions are automatically posted to the listed servers.")),
+                    m("div", {class: "ui center aligned vertical segment"},
+                        m("button", {class: "ui button",
+                            type: "submit"}, "Delete Key"))),
+                m("div", {id: "delete-success", class: "ui positive message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Deletion Success"),
+                    m("p", {id: "delete-success-message"}, "Your key has successfully been deleted.")),
+                m("div", {id: "delete-fail", class: "ui negative message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Deletion Failure"),
+                    m("p", {id: "delete-fail-message"}))))));
 
 // ================================================== //
 

@@ -26,8 +26,10 @@ const assert = require('assert');
 //                     FUNCTIONS                      //
 // ================================================== //
 
-it('Test getHistory', function() {
-    /** Tests the getHistory function */
+it('Test getHistory', async function() {
+    let url = "http://127.0.0.1:8080/";
+    let history = await getHistory(url);
+    assert.equal(history, 'No history found.');
 });
 
 // ================================================== //
