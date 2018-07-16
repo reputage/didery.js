@@ -611,7 +611,7 @@ export async function keyInceptionEvent(options={}) {
         let signature = await signResource(JSON.stringify(body), currentKeyPair[0]).catch(function (error) {
             throw error;
         });
-        signature = "signer=\"" + signature + "\"";
+        signature = "signer=\"" + signature + "\";";
 
         await batchPostHistory(signature, body, urls).catch(function (error) {
             throw error;
@@ -798,7 +798,7 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         let newSignature = await signResource(JSON.stringify(body), newCurrentKey).catch(function (error) {
             throw error;
         });
-        let signature = "signer=\"" + oldSignature + "\"; rotation=\"" + newSignature + "\"";
+        let signature = "signer=\"" + oldSignature + "\"; rotation=\"" + newSignature + "\";";
 
         await batchPutHistory(signature, body, did, urls).catch(function (error) {
             throw error;
