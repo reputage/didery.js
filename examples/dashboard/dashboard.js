@@ -11,9 +11,9 @@
 
 import 'babel-polyfill';
 import * as didery from '../../src/index.js';
-import {signResource} from "../../src";
-import {deleteHistory} from "../../src/api";
+
 const m = require('mithril');
+const ui = require('semantic-ui-css');
 
 // ================================================== //
 //                     FUNCTIONS                      //
@@ -412,7 +412,7 @@ let submitDeletion = async function(e) {
     }
 
     let data = {"id": did};
-    let signature = await signResource(JSON.stringify(data), key).catch(function (error) {
+    let signature = await didery.signResource(JSON.stringify(data), key).catch(function (error) {
         $('#delete-fail-message').text(error);
         $('#delete-fail').removeClass("hidden");
     });

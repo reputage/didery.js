@@ -11,7 +11,9 @@
 
 import 'babel-polyfill';
 import * as didery from '../../src/index.js';
+
 const m = require('mithril');
+const ui = require('semantic-ui-css');
 
 // ================================================== //
 //                     FUNCTIONS                      //

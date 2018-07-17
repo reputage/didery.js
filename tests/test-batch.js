@@ -157,48 +157,56 @@ it('Test batchPutHistory', async function() {
 
 it('Test batchGetBlobs', async function() {
     /** Tests the batchGetBlobs function */
+    // TODO: Add test when blob functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchPostBlobs', async function() {
     /** Tests the batchPostBlobs function */
+    // TODO: Add test when blob functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchPutBlobs', async function() {
     /** Tests the batchPutBlobs function */
+    // TODO: Add test when blob functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchGetRelays', async function() {
     /** Tests the batchGetRelays function */
+    // TODO: Add test when relay functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchPostRelays', async function() {
     /** Tests the batchPostRelays function */
+    // TODO: Add test when relay functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchPutRelays', async function() {
     /** Tests the batchPutRelays function */
+    // TODO: Add test when relay functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchDeleteRelays', async function() {
     /** Tests the batchDeleteRelays function */
+    // TODO: Add test when relay functionality is added to server
 });
 
 // ================================================== //
 
 it('Test batchGetErrors', async function() {
     /** Tests the batchGetErrors function */
+    // TODO: Add test when error functionality is added to server
 });
 
 // ================================================== //
