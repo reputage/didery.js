@@ -6,9 +6,3 @@ addons:
       - "python3-pip"
 node_js:
   - "node"
-
-before_script:
-  - npm run before
-
-after_script:
-  - npm run after
