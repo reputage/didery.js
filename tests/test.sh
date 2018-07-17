@@ -3,5 +3,8 @@
 set -o errexit
 
 git stash save 'Before Testing'
-git clone https://github.com/reputage/didery.js.git
-git checkout dev
+pip3 install -r requirements.txt
+virtualenv .virtualenvs
+#git clone https://github.com/reputage/didery.js.git
+#git checkout dev
+git stash pop

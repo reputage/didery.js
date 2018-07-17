@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --require babel-core/register --require babel-polyfill ./tests",
+    "test-script": "./tests/test.sh",
     "dev": "npx webpack --mode development",
     "watch": "npx webpack -w --mode development",
     "build": "npx webpack --mode production",
