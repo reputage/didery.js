@@ -1,10 +1,14 @@
 .. image:: https://github.com/reputage/didery.js/blob/dev/logo/didery.png
    :alt: Didery logo
 
-|Docs|
+|Docs| |Build Status|
 
 .. |Docs| image:: https://readthedocs.org/projects/dideryjs/badge/?version=latest
    :alt: Documentation Status
+
+.. |Build Status| image:: https://travis-ci.org/reputage/didery.js.svg?branch=dev
+   :target: https://travis-ci.org/reputage/didery.js
+   :alt: Build Status
 
 .. contents:: Table of Contents
 
