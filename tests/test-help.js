@@ -103,21 +103,21 @@ it('Test stringToBytes', function() {
 it('Test parseSignatureHeader', function() {
     /** Tests the parseSignatureHeader function. */
     let signature = "";
-    let expected = null;
-    assert.equal(parseSignatureHeader(signature), expected);
+    let test = null;
+    assert.equal(parseSignatureHeader(signature), test);
 
     signature = "testing";
-    expected = new Error("Signature formatted incorrectly");
-    assert.throws(() => parseSignatureHeader(signature), expected);
+    test = new Error("Signature formatted incorrectly");
+    assert.throws(() => parseSignatureHeader(signature), test);
 
     signature = "signer='EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==';";
-    expected = {"signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw=="};
-    assert.deepEqual(parseSignatureHeader(signature), expected);
+    test = {"signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw=="};
+    assert.deepEqual(parseSignatureHeader(signature), test);
     signature = "signer='EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==';" +
         "rotation='QXqlf2WzYEqwxN1RBQRTFbOlBtvc6gZqlp54R47nov8j6fx8kAYdJXPlpFAFyrqfaNXRA5Q6vwzM9vbKGRWlCQ=='";
-    expected = {"signer":"EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==",
+    test = {"signer":"EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==",
     "rotation":"QXqlf2WzYEqwxN1RBQRTFbOlBtvc6gZqlp54R47nov8j6fx8kAYdJXPlpFAFyrqfaNXRA5Q6vwzM9vbKGRWlCQ=="};
-    assert.deepEqual(parseSignatureHeader(signature), expected);
+    assert.deepEqual(parseSignatureHeader(signature), test);
 });
 
 // ================================================== //
