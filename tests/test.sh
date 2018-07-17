@@ -3,7 +3,6 @@
 set -o errexit
 
 test() {
-    git stash save 'Testing Backup'
     git clone https://github.com/reputage/didery.git
     cd didery
     git checkout dev
@@ -16,7 +15,6 @@ test() {
     pip3 uninstall -y didery
     rm -rf .consensys
     rm -rf didery
-    git stash pop
 }
 
 test
