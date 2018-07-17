@@ -108,7 +108,7 @@ it('Test parseSignatureHeader', function() {
 
     signature = "testing";
     expected = new Error("Signature formatted incorrectly");
-    assert.throws(() => {parseSignatureHeader(signature)}, expected);
+    assert.throws(() => parseSignatureHeader(signature), expected);
 
     signature = "signer='EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==';";
     expected = {"signer": "EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw=="};
@@ -126,12 +126,12 @@ it('Test checkConsensus', function() {
     /** Tests the checkConsensus function. */
     let data = [];
     let expected = new Error("No comparable data found");
-    assert.throws(() => {checkConsensus(data)}, expected);
+    assert.throws(() => checkConsensus(data), expected);
 
     data = [""];
     let level = 2;
     expected = new Error("Level must be between 0 and 1");
-    assert.throws(() => {checkConsensus(data, level)}, expected);
+    assert.throws(() => checkConsensus(data, level), expected);
 
     data = ["", ""];
     level = 1;
@@ -146,7 +146,7 @@ it('Test checkConsensus', function() {
     data = [function(){}, function (){}];
     level = 1;
     expected = new TypeError("Primitive or object expected");
-    assert.throws(() => {checkConsensus(data, level)}, expected);
+    assert.throws(() => checkConsensus(data, level), expected);
 
     data = ["abc", "abc"];
     level = 1;
@@ -205,12 +205,12 @@ it('Test getConsensus', function() {
     /** Tests the getConsensus function. */
     let data = [];
     let expected = new Error("No comparable data found");
-    assert.throws(() => {getConsensus(data)}, expected);
+    assert.throws(() => getConsensus(data), expected);
 
     data = [""];
     let level = 2;
     expected = new Error("Level must be between 0 and 1");
-    assert.throws(() => {getConsensus(data, level)}, expected);
+    assert.throws(() => getConsensus(data, level), expected);
 
     data = ["", ""];
     level = 1;
@@ -225,7 +225,7 @@ it('Test getConsensus', function() {
     data = [function(){}, function (){}];
     level = 1;
     expected = new TypeError("Primitive or object expected");
-    assert.throws(() => {getConsensus(data, level)}, expected);
+    assert.throws(() => getConsensus(data, level), expected);
 
     data = ["abc", "abc"];
     level = 1;
@@ -240,12 +240,12 @@ it('Test getConsensus', function() {
     data = ["abc", "efg"];
     level = 1;
     expected = new Error("Consensus unreached");
-    assert.throws(() => {getConsensus(data, level)}, expected);
+    assert.throws(() => getConsensus(data, level), expected);
 
     data = [{"test": "test"}, {"testing": "testing"}];
     level = 1;
     expected = new Error("Consensus unreached");
-    assert.throws(() => {getConsensus(data, level)}, expected);
+    assert.throws(() => getConsensus(data, level), expected);
 
     data = ["abc", "abc", "efg"];
     level = 0.5;
@@ -270,12 +270,12 @@ it('Test getConsensus', function() {
     data = ["abc", "efg", "hij"];
     level = 0.5;
     expected = new Error("Consensus unreached");
-    assert.throws(() => {getConsensus(data, level)}, expected);
+    assert.throws(() => getConsensus(data, level), expected);
 
     data = [{"test": "test"}, {"testing": "testing"}, {"test": "testing"}];
     level = 0.5;
     expected = new Error("Consensus unreached");
-    assert.throws(() => {getConsensus(data, level)}, expected);
+    assert.throws(() => getConsensus(data, level), expected);
 });
 
 // ================================================== //
@@ -315,11 +315,11 @@ it('Test extractDidParts', function() {
     /** Tests the extractDidParts function. */
     let did = "";
     let expected = new Error("Invalid DID value");
-    assert.throws(() => {extractDidParts(did)}, expected);
+    assert.throws(() => extractDidParts(did), expected);
 
     did = "did:test:";
     expected = new Error("Invalid DID method");
-    assert.throws(() => {extractDidParts(did)}, expected);
+    assert.throws(() => extractDidParts(did), expected);
 
     did = "did:dad:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U=";
     expected = "RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U=";
@@ -328,7 +328,7 @@ it('Test extractDidParts', function() {
     did = "did:dad:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U=";
     let method = "test";
     expected = new Error("Invalid DID method");
-    assert.throws(() => {extractDidParts(did, method)}, expected);
+    assert.throws(() => extractDidParts(did, method), expected);
 
     did = "did:test:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U=";
     method = "test";
