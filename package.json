@@ -7,6 +7,7 @@
     "test": "mocha --require babel-core/register --require babel-polyfill ./tests",
     "before": "./tests/before.sh",
     "after": "./tests/after.sh",
+    "test-script": "./tests/test.sh",
     "dev": "npx webpack --mode development",
     "watch": "npx webpack -w --mode development",
     "build": "npx webpack --mode production",
