@@ -11,7 +11,7 @@ test() {
     pip3 install -e didery
     dideryd .consensys/didery/db &
     PID=$!
-    npm test
+    npm run mocha
     kill -9 $PID
     pip3 uninstall -y didery
     rm -rf .consensys
