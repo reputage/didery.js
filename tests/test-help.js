@@ -107,7 +107,7 @@ it('Test parseSignatureHeader', function() {
     assert.equal(parseSignatureHeader(signature), expected);
 
     signature = "testing";
-    expected = function() {return new Error("Signature formatted incorrectly")};
+    expected = /Signature formatted incorrectly$/;
     assert.throws(() => parseSignatureHeader(signature), expected);
 
     signature = "signer='EPk0ZVCWToPu8RhTDR2WrXtrPbP5hikbrEEew0J6cnFwbvzSAF41148o4VX9ziTf-fJH_vsp1dpq0YoL33OBBw==';";
