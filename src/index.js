@@ -23,7 +23,8 @@ export {concatenateUint8Arrays,
     toBase64,
     fromBase64,
     keyInceptionEvent,
-    keyRotationEvent} from "./help";
+    keyRotationEvent,
+    keyRevocationEvent} from "./help";
 export {getHistory,
     postHistory,
     putHistory,

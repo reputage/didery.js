@@ -8,10 +8,10 @@ pairs. One can post the new key data to one or more didery servers, as well as s
 
 Parameters
 ==========
-keyRotationEvent has three required parameters. The first is a 64 byte Uint8Array of the old current private key, the
-second is a 64 byte Uint8Array of the new current private key (your pre-rotated key), and the third is the DID string
-associated with the given keys. This function also has one optional parameter which is an object containing various
-options. The possible options are as follows:
+keyRotationEvent has three required parameters. The first is a 64 byte Uint8Array of the current private key, the
+second is a 64 byte Uint8Array of the pre-rotated key, and the third is the DID string associated with the given keys.
+This function also has one optional parameter which is an object containing various options. The possible options are as
+follows:
 
 +------------------+---------------------------------------------------------------------------------------------------+
 |      Option      |                                            Description                                            |

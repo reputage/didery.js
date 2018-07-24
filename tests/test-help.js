@@ -9,8 +9,7 @@
 //                     IMPORTS                        //
 // ================================================== //
 
-import {
-    concatenateUint8Arrays,
+import {concatenateUint8Arrays,
     stringToBytes,
     parseSignatureHeader,
     checkConsensus,
@@ -24,9 +23,10 @@ import {
     toBase64,
     fromBase64,
     keyInceptionEvent,
-    keyRotationEvent, getHistory
-} from '../src/index';
-import {deleteHistory} from "../src/api";
+    keyRotationEvent,
+    keyRevocationEvent,
+    getHistory,
+    deleteHistory} from '../src/index';
 const assert = require('assert');
 
 // ================================================== //
@@ -807,6 +807,52 @@ it('Test keyRotationEvent', async function () {
 
     let data = {"id": did};
     let signature = await signResource(JSON.stringify(data), keypair[0]);
+    signature = "signer=\"" + signature + "\";";
+    await deleteHistory(signature, data, did, url);
+});
+
+// ================================================== //
+
+it('Test keyRevocationEvent', async function () {
+    /** Tests the keyRevocationEvent function. */
+    let options = {};
+    options.post = true;
+    options.urls = ["http://127.0.0.1:8080/"];
+    options.currentKeyPair = [new Uint8Array([167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,
+        159,167,151,183,94,25,189,11,128,151,39,237,178,213,80,122,33,83,170,168,209,242,204,97,178,93,243,193,162,247,
+        179,79,143,4,132,2,32,133,243,119,209,249,189,67]), new Uint8Array([178,213,80,122,33,83,170,168,209,242,204,97,
+        178,93,243,193,162,247,179,79,143,4,132,2,32,133,243,119,209,249,189,67])];
+    options.preRotatedKeyPair = [new Uint8Array([70,81,79,121,66,71,103,69,120,52,89,112,52,102,78,51,54,68,117,70,109,
+        106,87,49,107,55,113,75,79,86,111,101,167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,
+        159,167,151,183,94,25,189,11,128,151,39,237]),new Uint8Array([167,185,202,28,236,26,127,61,230,20,129,200,113,
+        50,88,24,161,11,216,134,159,167,151,183,94,25,189,11,128,151,39,237])];
+    let keypairs = await keyInceptionEvent(options);
+
+    await timeout(1000);
+    options = {};
+    options.urls = ["http://127.0.0.1:8080/"];
+    let oldCurrentKey = new Uint8Array([167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,
+        159,167,151,183,94,25,189,11,128,151,39,237,178,213,80,122,33,83,170,168,209,242,204,97,178,93,243,193,162,247,
+        179,79,143,4,132,2,32,133,243,119,209,249,189,67]);
+    let newCurrentKey = new Uint8Array([70,81,79,121,66,71,103,69,120,52,89,112,52,102,78,51,54,68,117,70,109,
+        106,87,49,107,55,113,75,79,86,111,101,167,185,202,28,236,26,127,61,230,20,129,200,113,50,88,24,161,11,216,134,
+        159,167,151,183,94,25,189,11,128,151,39,237]);
+    let did = await makeDid(new Uint8Array([178,213,80,122,33,83,170,168,209,242,204,97,178,93,243,193,162,247,179,79,
+        143,4,132,2,32,133,243,119,209,249,189,67]));
+    let result = await keyRevocationEvent(oldCurrentKey, newCurrentKey, did, options);
+    let expected = true;
+    assert.equal(result, expected);
+
+    let url = "http://127.0.0.1:8080/";
+    let vk1 = await toBase64(keypairs[0][1]);
+    let vk2 = await toBase64(keypairs[1][1]);
+    let history = await getHistory(url, did);
+    assert.equal(history.history.id, did);
+    assert.equal(history.history.signer, 2);
+    assert.deepEqual(history.history.signers, [vk1, vk2, null]);
+
+    let data = {"id": did};
+    let signature = "null";
     signature = "signer=\"" + signature + "\";";
     await deleteHistory(signature, data, did, url);
 });

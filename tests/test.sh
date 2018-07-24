@@ -8,7 +8,7 @@ test() {
     git checkout dev
     cd ..
     pip3 install -e didery
-    dideryd .consensys/didery/db &
+    dideryd --path .consensys/didery/db8080 &
     PID=$!
     npm run mocha
     kill -9 $PID

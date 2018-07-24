@@ -28,6 +28,7 @@ Table of Contents
    - `fromBase64 <https://github.com/reputage/didery.js/blob/dev/docs/help/fromBase64.rst>`_
    - `keyInceptionEvent <https://github.com/reputage/didery.js/blob/dev/docs/help/keyInceptionEvent.rst>`_
    - `keyRotationEvent <https://github.com/reputage/didery.js/blob/dev/docs/help/keyRotationEvent.rst>`_
+   - `keyRevocationEvent <https://github.com/reputage/didery.js/blob/dev/docs/help/keyRevocationEvent.rst>`_
 - `API <https://github.com/reputage/didery.js/blob/dev/docs/api>`_
    - `getHistory <https://github.com/reputage/didery.js/blob/dev/docs/api/getHistory.rst>`_
    - `postHistory <https://github.com/reputage/didery.js/blob/dev/docs/api/postHistory.rst>`_

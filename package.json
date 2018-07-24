@@ -2,7 +2,7 @@
   "name": "didery.js",
   "version": "1.0.0",
   "description": "Javascript client library for didery.",
-  "main": "index.js",
+  "main": "dis/didery.js",
   "scripts": {
     "mocha": "mocha --require babel-core/register --require babel-polyfill ./tests",
     "test": "./tests/test.sh",

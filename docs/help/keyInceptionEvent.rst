@@ -4,7 +4,7 @@ keyInceptionEvent
 This function performs a key inception event. In an inception event two keys pairs are created (either manually or
 automatically generated). The first key pair represents the current key which can be used to sign data. The second key
 pair represents the pre-rotated key which will replace the current key on a rotation event. An immutable DID is also
-created from the current key pair. This is used to prove data prominance and track key history. This function also
+created from the current key pair. This is used to prove data provenance and track key history. This function also
 contains a number of options for managing the newly created key pairs and DID. One can post the key data to one or more
 didery servers, as well as show or save the private keys and DID.
 
