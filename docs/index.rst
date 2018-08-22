@@ -1,5 +1,5 @@
 ##########################################
-dideryJS Documentation for 0.0.1 and later
+dideryJS Documentation for 0.1.0 and later
 ##########################################
 dideryJS helps users interface with distributed or soloed didery servers. The didery project aims at bring about proper
 key management by providing easy to use key management tools. This documentation is divided into three major parts

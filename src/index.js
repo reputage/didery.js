@@ -24,7 +24,8 @@ export {concatenateUint8Arrays,
     fromBase64,
     keyInceptionEvent,
     keyRotationEvent,
-    keyRevocationEvent} from "./help";
+    keyRevocationEvent,
+    verifyEvents} from "./help";
 export {getHistory,
     postHistory,
     putHistory,
@@ -36,7 +37,8 @@ export {getHistory,
     postRelays,
     putRelays,
     deleteRelays,
-    getErrors} from "./api";
+    getErrors,
+    getEvent} from "./api";
 export {batchGetHistory,
     batchPostHistory,
     batchPutHistory,
@@ -48,7 +50,8 @@ export {batchGetHistory,
     batchPostRelays,
     batchPutRelays,
     batchDeleteRelays,
-    batchGetErrors} from "./batch";
+    batchGetErrors,
+    batchGetEvent} from "./batch";
 
 // ================================================== //
 //                        EOF                         //

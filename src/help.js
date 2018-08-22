@@ -10,7 +10,7 @@
 // ================================================== //
 
 import "babel-polyfill";
-import {batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
+import {batchGetEvent, batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
 const fileSaver = require('file-saver');
 const moment = require('moment');
@@ -948,6 +948,50 @@ export async function keyRevocationEvent(currentKey, preRotatedKey, did, options
         throw error;
     });
 
+    return true;
+}
+
+// ================================================== //
+
+export async function verifyEvents(urls=["http://127.0.0.1:8080/"], did="") {
+    /** Verifies the events from one or more servers.
+     *
+     * @param {Array} urls - Array of server urls (comma separated strings).
+     * @param {string} did - Optional string of did (used to retrieve a single history entry),
+     *
+     * @return {Array} - Array of results from fetch operations.
+     */
+    let events = await batchGetEvent(urls, did);
+    for (let i=0; i < events.length; i++) {
+        let eventGroup = JSON.parse(events[i]);
+        for (let j=0; j < eventGroup.length; j++) {
+            let message = JSON.stringify(eventGroup[j].event);
+            if (eventGroup[j].signatures.hasOwnProperty("rotation")) {
+                let pkIndex = eventGroup[j].event.signer;
+                let pk1 = eventGroup[j].event.signers[pkIndex];
+                let pk2 = eventGroup[j].event.signers[pkIndex-1];
+                let result = await verify64u(eventGroup[j].signatures.rotation, message, pk1);
+                if (result) {
+                    let result = await verify64u(eventGroup[j].signatures.signer, message, pk2);
+                    if (!result) {
+                        return false;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+
+            else {
+                let pkIndex = eventGroup[j].event.signer;
+                let pk = eventGroup[j].event.signers[pkIndex];
+                let result = await verify64u(eventGroup[j].signatures.signer, message, pk);
+                if (!result) {
+                    return false;
+                }
+            }
+        }
+    }
     return true;
 }
 
