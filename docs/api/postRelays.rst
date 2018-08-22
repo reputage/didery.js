@@ -35,7 +35,7 @@ Example
        "main": true,
        "name": "alpha",
        "port": "7541"
-   }
+   };
    didery.postRelays(data, baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {

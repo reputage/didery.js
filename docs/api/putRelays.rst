@@ -35,7 +35,7 @@ Example
        "main": true,
        "name": "alpha",
        "port": "7541"
-   }
+   };
    let uid = "1";
    didery.putRelays(data, uid, baseURL).then(function (response) {
         // Do something with response

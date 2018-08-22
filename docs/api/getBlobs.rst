@@ -28,7 +28,7 @@ Example
    });
 
    baseURL = "http://127.0.0.1:8000";
-   let did = "did:dad:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U="
+   let did = "did:dad:RlFPeUJHZ0V4NFlwNGZOMzZEdUZtalcxazdxS09Wb2U=";
    didery.getBlobs(baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {

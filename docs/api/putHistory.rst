@@ -2,7 +2,7 @@
 putHistory
 ##########
 This function uses fetch to hit the PUT history endpoint of a didery server. The POST history endpoint updates key
-histories The PUT endpoint should only be used for key rotation and revocation events. Data put to the server will be
+histories. The PUT endpoint should only be used for key rotation and revocation events. Data put to the server will be
 verified against signatures and old key history. If any discrepancies are found the operation will fail. This function
 is asynchronous.
 
@@ -51,7 +51,7 @@ Example
             "8qOLfvSJfuDX2YjKh_BAUwSRD-TnDLhEpn9zP7cwf6Q=",
             "kAzBIalx6KT22M0CJyw2RqDibDiR0wwPXl5he6SDOIM="
         ]
-   }
+   };
    didery.putHistory(signature, data, baseURL).then(function (response) {
         // Do something with response
    }).catch(function (error) {

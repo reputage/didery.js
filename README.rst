@@ -1,6 +1,15 @@
 .. image:: https://github.com/reputage/didery.js/blob/dev/logo/didery.png
    :alt: Didery logo
 
+|Docs| |Build Status|
+
+.. |Docs| image:: https://readthedocs.org/projects/dideryjs/badge/?version=latest
+   :alt: Documentation Status
+
+.. |Build Status| image:: https://travis-ci.org/reputage/didery.js.svg?branch=dev
+   :target: https://travis-ci.org/reputage/didery.js
+   :alt: Build Status
+
 .. contents:: Table of Contents
 
 Overview
@@ -41,13 +50,13 @@ The dideryJS library can also be downloaded as an npm repository. To do so make 
 package manager (npm) installed on your machine (see details above for installation instructions). With Node.js
 installed, the following terminal command can be run to install dideryJS:
 ::
-   $ npm install didery
-To save dideryJS as a project dependency run either:
+   $ npm install dideryjs
+To save dideryJS as a project dependency run either
 ::
-  $ npm install --save-dev didery
+  $ npm install --save-dev dideryjs
 for a development dependency, or
 ::
-  $ npm install --save didery
+  $ npm install --save dideryjs
 for a production dependency.
 
 Testing

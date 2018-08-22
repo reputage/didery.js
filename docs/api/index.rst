@@ -9,6 +9,7 @@ API
    getHistory
    postHistory
    putHistory
+   deleteHistory
    getBlobs
    postBlobs
    putBlobs

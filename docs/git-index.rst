@@ -1,5 +1,5 @@
 ##########################################
-dideryJS Documentation for 0.0.1 and later
+dideryJS Documentation for 1.0.0 and later
 ##########################################
 dideryJS helps users interface with distributed or soloed didery servers. The didery project aims at bring about proper
 key management by providing easy to use key management tools. This documentation is divided into three major parts
@@ -28,10 +28,12 @@ Table of Contents
    - `fromBase64 <https://github.com/reputage/didery.js/blob/master/docs/help/fromBase64.rst>`_
    - `keyInceptionEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyInceptionEvent.rst>`_
    - `keyRotationEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyRotationEvent.rst>`_
+   - `keyRevocationEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyRevocationEvent.rst>`_
 - `API <https://github.com/reputage/didery.js/blob/master/docs/api>`_
    - `getHistory <https://github.com/reputage/didery.js/blob/master/docs/api/getHistory.rst>`_
    - `postHistory <https://github.com/reputage/didery.js/blob/master/docs/api/postHistory.rst>`_
    - `putHistory <https://github.com/reputage/didery.js/blob/master/docs/api/putHistory.rst>`_
+   - `deleteHistory <https://github.com/reputage/didery.js/blob/master/docs/api/deleteHistory.rst>`_
    - `getBlobs <https://github.com/reputage/didery.js/blob/master/docs/api/getBlobs.rst>`_
    - `postBlobs <https://github.com/reputage/didery.js/blob/master/docs/api/postBlobs.rst>`_
    - `putBlobs <https://github.com/reputage/didery.js/blob/master/docs/api/putBlobs.rst>`_
@@ -44,6 +46,7 @@ Table of Contents
    - `batchGetHistory <https://github.com/reputage/didery.js/blob/master/docs/batch/batchGetHistory.rst>`_
    - `batchPostHistory <https://github.com/reputage/didery.js/blob/master/docs/batch/batchPostHistory.rst>`_
    - `batchPutHistory <https://github.com/reputage/didery.js/blob/master/docs/batch/batchPutHistory.rst>`_
+   - `batchDeleteHistory <https://github.com/reputage/didery.js/blob/master/docs/batch/batchDeleteHistory.rst>`_
    - `batchGetBlobs <https://github.com/reputage/didery.js/blob/master/docs/batch/batchGetBlobs.rst>`_
    - `batchPostBlobs <https://github.com/reputage/didery.js/blob/master/docs/batch/batchPostBlobs.rst>`_
    - `batchPutBlobs <https://github.com/reputage/didery.js/blob/master/docs/batch/batchPutBlobs.rst>`_
@@ -52,5 +55,3 @@ Table of Contents
    - `batchPutRelays <https://github.com/reputage/didery.js/blob/master/docs/batch/batchPutRelays.rst>`_
    - `batchDeleteRelays <https://github.com/reputage/didery.js/blob/master/docs/batch/batchDeleteRelays.rst>`_
    - `batchGetErrors <https://github.com/reputage/didery.js/blob/master/docs/batch/batchGetErrors.rst>`_
-      
-      

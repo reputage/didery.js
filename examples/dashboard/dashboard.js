@@ -11,7 +11,9 @@
 
 import 'babel-polyfill';
 import * as didery from '../../src/index.js';
+
 const m = require('mithril');
+const ui = require('semantic-ui-css');
 
 // ================================================== //
 //                     FUNCTIONS                      //
@@ -58,7 +60,6 @@ let submitInception = async function(e) {
     }
 
     if (saveCurrent === true && storageCurrent === "") {
-        console.error("Error: No storage specified");
         $('#incept-fail-message').text("Error: No storage specified");
         $('#incept-fail').removeClass("hidden");
         return;
@@ -79,7 +80,6 @@ let submitInception = async function(e) {
     }
 
     if (savePreRotated === true && storagePreRotated === "") {
-        console.error("Error: No storage specified");
         $('#incept-fail-message').text("Error: No storage specified");
         $('#incept-fail').removeClass("hidden");
         return;
@@ -100,7 +100,6 @@ let submitInception = async function(e) {
     }
 
     if (saveDid === true && storageDid === "") {
-        console.error("Error: No storage specified");
         $('#incept-fail-message').text("Error: No storage specified");
         $('#incept-fail').removeClass("hidden");
         return;
@@ -108,70 +107,54 @@ let submitInception = async function(e) {
 
     let options = {};
     if (currentSeed !== "") {
-        try {
-            options.currentSeed = await didery.fromBase64(currentSeed);
-        }
-        catch (error) {
-            console.error(error);
+        options.currentSeed = await didery.fromBase64(currentSeed).catch(function (error) {
             $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
-            return;
-        }
+        });
     }
 
     if (preRotated !== "") {
-        try {
-            options.preRotated = await didery.fromBase64(preRotated);
-        }
-        catch (error) {
-            console.error(error);
+        options.preRotated = await didery.fromBase64(preRotated).catch(function (error) {
             $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
-            return;
-        }
+        });
     }
 
     if (currentPrivateKey !== "" && currentPublicKey !== "") {
-        try {
-            let keyPair = [];
-            keyPair.push(await didery.fromBase64(currentPrivateKey));
-            keyPair.push(await didery.fromBase64(currentPublicKey));
-            options.currentKeyPair = keyPair;
-        }
-        catch (error) {
-            console.error(error);
+        let keyPair = [];
+        keyPair.push(await didery.fromBase64(currentPrivateKey).catch(function (error) {
             $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
-            return;
-        }
+        }));
+        keyPair.push(await didery.fromBase64(currentPublicKey).catch(function (error) {
+            $('#incept-fail-message').text(error);
+            $('#incept-fail').removeClass("hidden");
+        }));
+        options.currentKeyPair = keyPair;
     }
 
     else if ((currentPrivateKey !== "" && currentPublicKey === "") ||
         (currentPrivateKey === "" && currentPublicKey !== "")) {
-        console.error("Error: Incomplete current key pair.");
         $('#incept-fail-message').text("Error: Incomplete current key pair.");
         $('#incept-fail').removeClass("hidden");
         return;
     }
 
     if (preRotatedPrivateKey !== "" && preRotatedPublicKey !== "") {
-        try {
-            let keyPair = [];
-            keyPair.push(await didery.fromBase64(preRotatedPrivateKey));
-            keyPair.push(await didery.fromBase64(preRotatedPublicKey));
-            options.preRotatedKeyPair = keyPair;
-        }
-        catch (error) {
-            console.error(error);
+        let keyPair = [];
+        keyPair.push(await didery.fromBase64(preRotatedPrivateKey).catch(function (error) {
             $('#incept-fail-message').text(error);
             $('#incept-fail').removeClass("hidden");
-            return;
-        }
+        }));
+        keyPair.push(await didery.fromBase64(preRotatedPublicKey).catch(function (error) {
+            $('#incept-fail-message').text(error);
+            $('#incept-fail').removeClass("hidden");
+        }));
+        options.preRotatedKeyPair = keyPair;
     }
 
     else if ((preRotatedPrivateKey !== "" && preRotatedPublicKey === "") ||
         (preRotatedPrivateKey === "" && preRotatedPublicKey !== "")) {
-        console.error("Error: Incomplete pre-rotated key pair");
         $('#incept-fail-message').text("Error: Incomplete pre-rotated key pair");
         $('#incept-fail').removeClass("hidden");
         return;
@@ -225,8 +208,15 @@ let submitRotation = async function(e) {
         $('#rotate-success').addClass("hidden");
     }
 
-    let oldKey = await didery.fromBase64($('#rotate-old-private-key').val());
-    let newKey = await didery.fromBase64($('#rotate-new-private-key').val());
+    let oldKey = await didery.fromBase64($('#rotate-old-private-key').val()).catch(function (error) {
+        $('#rotate-fail-message').text(error);
+        $('#rotate-fail').removeClass("hidden");
+    });
+    let newKey = await didery.fromBase64($('#rotate-new-private-key').val()).catch(function (error) {
+        $('#rotate-fail-message').text(error);
+        $('#rotate-fail').removeClass("hidden");
+    });
+
     let did = $('#rotate-did').val();
     let seed = $('#rotate-seed').val();
     let preRotatedPrivateKey = $('#rotate-pre-rotated-private-key').val();
@@ -275,7 +265,6 @@ let submitRotation = async function(e) {
     }
 
     if (saveCurrent === true && storageCurrent === "") {
-        console.error("Error: No storage specified.");
         $('#rotate-fail-message').text("Error: No storage specified.");
         $('#rotate-fail').removeClass("hidden");
         return;
@@ -296,7 +285,6 @@ let submitRotation = async function(e) {
     }
 
     if (savePreRotated === true && storagePreRotated === "") {
-        console.error("Error: No storage specified.");
         $('#rotate-fail-message').text("Error: No storage specified.");
         $('#rotate-fail').removeClass("hidden");
         return;
@@ -304,35 +292,27 @@ let submitRotation = async function(e) {
 
     let options = {};
     if (seed !== "") {
-        try {
-            options.seed = await didery.fromBase64(seed);
-        }
-        catch (error) {
-            console.error(error);
+        options.seed = await didery.fromBase64(seed).catch(function (error) {
             $('#rotate-fail-message').text(error);
             $('#rotate-fail').removeClass("hidden");
-            return;
-        }
+        });
     }
 
     if (preRotatedPrivateKey !== "" && preRotatedPublicKey !== "") {
-        try {
-            let keyPair = [];
-            keyPair.push(await didery.fromBase64(preRotatedPrivateKey));
-            keyPair.push(await didery.fromBase64(preRotatedPublicKey));
-            options.preRotatedKeyPair = keyPair;
-        }
-        catch (error) {
-            console.error(error);
+        let keyPair = [];
+        keyPair.push(await didery.fromBase64(preRotatedPrivateKey).catch(function (error) {
             $('#rotate-fail-message').text(error);
             $('#rotate-fail').removeClass("hidden");
-            return;
-        }
+        }));
+        keyPair.push(await didery.fromBase64(preRotatedPublicKey).catch(function (error) {
+            $('#rotate-fail-message').text(error);
+            $('#rotate-fail').removeClass("hidden");
+        }));
+        options.preRotatedKeyPair = keyPair;
     }
 
     else if ((preRotatedPrivateKey !== "" && preRotatedPublicKey === "") ||
         (preRotatedPrivateKey === "" && preRotatedPublicKey !== "")) {
-        console.error("Error: Incomplete current key pair");
         $('#rotate-fail-message').text("Error: Incomplete current key pair");
         $('#rotate-fail').removeClass("hidden");
         return;
@@ -369,8 +349,140 @@ let submitRotation = async function(e) {
         $('#rotate-success').removeClass("hidden");
     }
 };
+
 // ================================================== //
-//                       MAIN                         //
+
+let submitDeletion = async function(e) {
+    e.preventDefault();
+    $('.error').removeClass("error");
+
+    if (!$('#delete-fail').hasClass("hidden")) {
+        $('#delete-fail').addClass("hidden");
+    }
+
+    if (!$('#delete-success').hasClass("hidden")) {
+        $('#delete-success').addClass("hidden");
+    }
+
+    let key = await didery.fromBase64($('#delete-current-private-key').val()).catch(function (error) {
+        $('#delete-fail-message').text(error);
+        $('#delete-fail').removeClass("hidden");
+        return;
+    });
+    let did = $('#delete-did').val();
+    let urls = $('#delete-urls').val();
+
+    if (key.length === 0) {
+        $('#delete-current-private-key').parent().addClass("error");
+        $('#delete-fail-message').text("Error: Missing required field Old Private Key.");
+        $('#delete-fail').removeClass("hidden");
+        return;
+    }
+
+    if (did === "") {
+        $('#delete-did').parent().addClass("error");
+        $('#delete-fail-message').text("Error: Missing required field DID.");
+        $('#delete-fail').removeClass("hidden");
+        return;
+    }
+
+    if (urls === "") {
+        $('#delete-urls').parent().addClass("error");
+        $('#delete-fail-message').text("Error: Missing required field URL's.");
+        $('#delete-fail').removeClass("hidden");
+        return;
+    }
+
+    let data = {"id": did};
+    let signature = await didery.signResource(JSON.stringify(data), key).catch(function (error) {
+        $('#delete-fail-message').text(error);
+        $('#delete-fail').removeClass("hidden");
+    });
+    urls = urls.split(',');
+    signature = "signer=\"" + signature + "\";";
+    await didery.batchDeleteHistory(signature, data, did, urls).catch(function (error) {
+        $('#delete-fail-message').text(error);
+        $('#delete-fail').removeClass("hidden");
+    });
+
+    if ($('#delete-fail').hasClass("hidden")) {
+        $('#delete-success').removeClass("hidden");
+    }
+};
+
+// ================================================== //
+
+let submitRevocation = async function(e) {
+    e.preventDefault();
+    $('.error').removeClass("error");
+
+    if (!$('#revoke-fail').hasClass("hidden")) {
+        $('#revoke-fail').addClass("hidden");
+    }
+
+    if (!$('#revoke-success').hasClass("hidden")) {
+        $('#revoke-success').addClass("hidden");
+    }
+
+    let oldKey = await didery.fromBase64($('#revoke-old-private-key').val()).catch(function (error) {
+        $('#revoke-fail-message').text(error);
+        $('#revoke-fail').removeClass("hidden");
+    });
+    let newKey = await didery.fromBase64($('#revoke-new-private-key').val()).catch(function (error) {
+        $('#revoke-fail-message').text(error);
+        $('#revoke-fail').removeClass("hidden");
+    });
+    let did = $('#revoke-did').val();
+    let consensus = $('#revoke-consensus').val();
+    let urls = $('#revoke-urls').val();
+
+    if (oldKey.length === 0) {
+        $('#revoke-old-private-key').parent().addClass("error");
+        $('#revoke-fail-message').text("Error: Missing required field Old Private Key.");
+        $('#revoke-fail').removeClass("hidden");
+        return;
+    }
+
+    if (newKey.length === 0) {
+        $('#revoke-new-private-key').parent().addClass("error");
+        $('#revoke-fail-message').text("Error: Missing required field New Private Key.");
+        $('#revoke-fail').removeClass("hidden");
+        return;
+    }
+
+    if (did === "") {
+        $('#revoke-did').parent().addClass("error");
+        $('#revoke-fail-message').text("Error: Missing required field DID.");
+        $('#revoke-fail').removeClass("hidden");
+        return;
+    }
+
+    let options = {};
+    if (urls !== "") {
+        options.urls = urls.split(',');
+    }
+
+    else {
+        $('#revoke-urls').parent().addClass("error");
+        $('#revoke-fail-message').text("Error: Missing required field URL's.");
+        $('#revoke-fail').removeClass("hidden");
+        return;
+    }
+
+    if (consensus !== "") {
+        options.consensus = parseFloat(consensus);
+    }
+
+    await didery.keyRevocationEvent(oldKey, newKey, did, options).catch(function (error) {
+        $('#revoke-fail-message').text(error);
+        $('#revoke-fail').removeClass("hidden");
+    });
+
+    if ($('#revoke-fail').hasClass("hidden")) {
+        $('#revoke-success').removeClass("hidden");
+    }
+};
+
 // ================================================== //
 
 m.render(document.body,
@@ -378,10 +490,16 @@ m.render(document.body,
         m("div", {class: "ui top attached tabular menu"},
             m("a[data-tab=incept]", {class: "active item"},
                 m("i", {class: "key icon"}),
-                m("div", "Key Inception")),
+                m("div", "DID Inception")),
             m("a[data-tab=rotate]", {class: "item"},
                 m("i", {class: "sync alternate icon"}),
-                m("div", "Key Rotation"))),
+                m("div", "DID Rotation")),
+            m("a[data-tab=revoke]", {class: "item"},
+                m("i", {class: "times circle icon"}),
+                m("div", "DID Revocation")),
+            m("a[data-tab=delete]", {class: "item"},
+                m("i", {class: "trash icon"}),
+                m("div", "DID Deletion"))),
         m("div[data-tab=incept]", {class: "ui bottom attached tab segment active"},
             m("div", {class: "ui container segment"},
                 m("form", {class: "ui form", action: "#", onsubmit: submitInception},
@@ -652,7 +770,7 @@ m.render(document.body,
                             m("span[data-content=This is an optional level of consensus that must be met by servers to " +
                                 "use server key history data. This should be a number between 0 and 1.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
                                 m("i", {class: "icon question circle outline"}))),
-                        m("input", {id: "rotate-seed",
+                        m("input", {id: "rotate-consensus",
                             type: "number",
                             step: "0.01",
                             min: "0",
@@ -775,7 +893,106 @@ m.render(document.body,
                 m("div", {id: "rotate-fail", class: "ui negative message hidden"},
                     m("i", {class: "close icon"}),
                     m("div", {class: "header"}, "Key Rotation Failure"),
-                    m("p", {id: "rotate-fail-message"}))))));
+                    m("p", {id: "rotate-fail-message"})))),
+        m("div[data-tab=revoke]", {class: "ui bottom attached tab segment"},
+            m("div", {class: "ui container segment"},
+                m("form", {class: "ui form", action: "#", onsubmit: submitRevocation},
+                    m("div", {class: "required field"},
+                        m("label", "Current Private Key ",
+                            m("span[data-content=This is the 64 byte, base64 encoded string of your current private key. This key will " +
+                                "no longer be usable after the revocation event.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "revoke-old-private-key",
+                            type: "text",
+                            placeholder: "Base64 Encoded Private Key ..."})),
+                    m("div", {class: "required field"},
+                        m("label", "Pre-Rotated Private Key ",
+                            m("span[data-content=This is the 64 byte, base64 encoded string of your pre-rotated private key. This key will " +
+                                "no longer be usable after the revocation event.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "revoke-new-private-key",
+                            type: "text",
+                            placeholder: "Base64 Encoded Private Key ..."})),
+                    m("div", {class: "required field"},
+                        m("label", "DID ",
+                            m("span[data-content=This is the decentralized identifier string associated with your key " +
+                                "history.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "revoke-did",
+                            type: "text",
+                            placeholder: "DID ..."})),
+                    m("div", {class: "field"},
+                        m("label", "Consensus Level ",
+                            m("span[data-content=This is an optional level of consensus that must be met by servers to " +
+                                "use server key history data. This should be a number between 0 and 1.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "revoke-consensus",
+                            type: "number",
+                            step: "0.01",
+                            min: "0",
+                            max: "1",
+                            placeholder: "0"})),
+                    m("div", {class: "required field"},
+                        m("label", "URL's ",
+                            m("span[data-content=This is a list of comma separated urls. Your key history will " +
+                                "be posted to each url in this list.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("textarea", {id:"revoke-urls",
+                            rows: 5,
+                            placeholder: "URL's (Comma Separated) ..."})),
+                    m("div", {class: "ui segment"},
+                        m("p", "Note: Revocations are automatically posted to the listed servers.")),
+                    m("div", {class: "ui center aligned vertical segment"},
+                        m("button", {class: "ui button",
+                            type: "submit"}, "Revoke Key"))),
+                m("div", {id: "revoke-success", class: "ui positive message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Revocation Success"),
+                    m("p", {id: "revoke-success-message"}, "Your key has successfully been deleted.")),
+                m("div", {id: "revoke-fail", class: "ui negative message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Revocation Failure"),
+                    m("p", {id: "revoke-fail-message"})))),
+        m("div[data-tab=delete]", {class: "ui bottom attached tab segment"},
+            m("div", {class: "ui container segment"},
+                m("form", {class: "ui form", action: "#", onsubmit: submitDeletion},
+                    m("div", {class: "required field"},
+                        m("label", "Current Private Key ",
+                            m("span[data-content=This is the 64 byte, base64 encoded string of your current private key. This key will " +
+                                "no longer be usable after the deletion event.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "delete-current-private-key",
+                            type: "text",
+                            placeholder: "Base64 Encoded Private Key ..."})),
+                    m("div", {class: "required field"},
+                        m("label", "DID ",
+                            m("span[data-content=This is the decentralized identifier string associated with your key " +
+                                "history.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("input", {id: "delete-did",
+                            type: "text",
+                            placeholder: "DID ..."})),
+                    m("div", {class: "required field"},
+                        m("label", "URL's ",
+                            m("span[data-content=This is a list of comma separated urls. Your key history will " +
+                                "be posted to each url in this list.][data-variation=wide]", {class: "popup", style: "cursor: pointer;"},
+                                m("i", {class: "icon question circle outline"}))),
+                        m("textarea", {id:"delete-urls",
+                            rows: 5,
+                            placeholder: "URL's (Comma Separated) ..."})),
+                    m("div", {class: "ui segment"},
+                        m("p", "Note: Deletions are automatically posted to the listed servers.")),
+                    m("div", {class: "ui center aligned vertical segment"},
+                        m("button", {class: "ui button",
+                            type: "submit"}, "Delete Key"))),
+                m("div", {id: "delete-success", class: "ui positive message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Deletion Success"),
+                    m("p", {id: "delete-success-message"}, "Your key has successfully been deleted.")),
+                m("div", {id: "delete-fail", class: "ui negative message hidden"},
+                    m("i", {class: "close icon"}),
+                    m("div", {class: "header"}, "Key Deletion Failure"),
+                    m("p", {id: "delete-fail-message"}))))));
 
 // ================================================== //
 

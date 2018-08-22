@@ -9,6 +9,7 @@
 //                     IMPORTS                        //
 // ================================================== //
 
+import "babel-polyfill";
 import {batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
 const fileSaver = require('file-saver');
@@ -373,6 +374,31 @@ export async function generateKeyPair(seed=[]) {
     catch (error) {
         throw error;
     }
+    /*let seedBuffer = libsodium.sodium_malloc(libsodium.crypto_sign_SEEDBYTES);
+    if (seed === undefined || seed.length === 0) {
+        libsodium.randombytes_buf(seedBuffer);
+    }
+
+    else {
+        if (typeof seed === "string") {
+            seed = stringToBytes(seed);
+        }
+
+        seedBuffer = Buffer.from(seed);
+    }
+
+    try {
+        let publicBuffer = libsodium.sodium_malloc(libsodium.crypto_sign_PUBLICKEYBYTES);
+        let secretBuffer = libsodium.sodium_malloc(libsodium.crypto_sign_SECRETKEYBYTES);
+        libsodium.crypto_sign_seed_keypair(publicBuffer, secretBuffer, seedBuffer);
+        let privateKey = new Uint8Array(secretBuffer);
+        let publicKey = new Uint8Array(publicBuffer);
+        return [privateKey, publicKey];
+    }
+
+    catch (error) {
+        throw error;
+    }*/
 }
 
 
@@ -611,7 +637,7 @@ export async function keyInceptionEvent(options={}) {
         let signature = await signResource(JSON.stringify(body), currentKeyPair[0]).catch(function (error) {
             throw error;
         });
-        signature = "signer=\"" + signature + "\"";
+        signature = "signer=\"" + signature + "\";";
 
         await batchPostHistory(signature, body, urls).catch(function (error) {
             throw error;
@@ -723,14 +749,14 @@ export async function keyInceptionEvent(options={}) {
 
 // ================================================== //
 
-export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, options={}) {
+export async function keyRotationEvent(currentKey, preRotatedKey, did, options={}) {
     /** Performs a key rotation event.
      * On rotation the previous pre-rotated key becomes the new current key and a new pre-rotated key is created
      * (either manually input or automatically generated). After an rotation event there are options are options for
      * managing the new current and pre-rotated keys.
      *
-     * @param {Uint8Array} oldCurrentKey - Byte array of retiring current private key.
-     * @param {Uint8Array} newCurrentKey - Byte array of new current key (old pre-rotated key).
+     * @param {Uint8Array} currentKey - Byte array of retiring current private key.
+     * @param {Uint8Array} preRotatedKey - Byte array of new current key (old pre-rotated key).
      * @param {string} did - DID associated with key history.
      * @param {Uint8Array} options.seed - Optional seed for key generation.
      * @param options.preRotatedKeyPair - Optional array with the pre-rotated key (byte array) and pre-rotated public
@@ -771,7 +797,7 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         throw new Error("Invalid pre-rotated private key");
     }
 
-    else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[0].length !== 32)) {
+    else if ((preRotatedKeyPair[1] instanceof Uint8Array !== true || preRotatedKeyPair[1].length !== 32)) {
         throw new Error("Invalid pre-rotated public key");
     }
 
@@ -792,13 +818,13 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
         body.signer += 1;
         body.signers.push(prkSigner);
 
-        let oldSignature = await signResource(JSON.stringify(body), oldCurrentKey).catch(function (error) {
+        let oldSignature = await signResource(JSON.stringify(body), currentKey).catch(function (error) {
             throw error;
         });
-        let newSignature = await signResource(JSON.stringify(body), newCurrentKey).catch(function (error) {
+        let newSignature = await signResource(JSON.stringify(body), preRotatedKey).catch(function (error) {
             throw error;
         });
-        let signature = "signer=\"" + newSignature + "\"; rotation=\"" + oldSignature + "\"";
+        let signature = "signer=\"" + oldSignature + "\"; rotation=\"" + newSignature + "\";";
 
         await batchPutHistory(signature, body, did, urls).catch(function (error) {
             throw error;
@@ -806,7 +832,7 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
     }
 
     if (saveCurrent === true) {
-        let key = await toBase64(newCurrentKey).catch(function (error) {
+        let key = await toBase64(preRotatedKey).catch(function (error) {
             throw error;
         });
         if (storageCurrent.toLowerCase() === "local") {
@@ -862,7 +888,7 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
     }
 
     if (showCurrent === true) {
-        let pkey = await toBase64(newCurrentKey).catch(function (error) {
+        let pkey = await toBase64(preRotatedKey).catch(function (error) {
             throw error;
         });
         alert("Please save your current private key in a secure location:\n\n" + pkey);
@@ -876,6 +902,53 @@ export async function keyRotationEvent(oldCurrentKey, newCurrentKey, did, option
     }
 
     return preRotatedKeyPair;
+}
+
+// ================================================== //
+
+export async function keyRevocationEvent(currentKey, preRotatedKey, did, options={}) {
+    /** Performs a key rotation event.
+     * On revocation the keys are rotated twice to null keys. Revocations are automatically posted to given servers.
+     * Keys are no longer usable after a revocation event.
+     *
+     * @param {Uint8Array} currentKey - Byte array of retiring current private key.
+     * @param {Uint8Array} preRotatedKey - Byte array of new current key (old pre-rotated key).
+     * @param {string} did - DID associated with key history.
+     * @param {float} options.consensus - Optional float for consensus level of key history.
+     * @param {Array} options.urls - Optional array of server URLs (comma separated strings).
+     *
+     * @return {boolean} - Boolean of whether or not the revocation succeeded.
+     */
+    let consensus = options.consensus || 1.0;
+    let urls = options.urls || ["http://127.0.0.1:8080/"];
+
+    let prkSigner = null;
+
+    let history = {};
+    await batchGetHistory(urls, did).then(function (response) {
+        history = getConsensus(response, consensus);
+    }).catch(function (error) {
+        throw error;
+    });
+
+    let body = history.history;
+    body.changed = moment().format();
+    body.signer += 2;
+    body.signers.push(prkSigner);
+
+    let oldSignature = await signResource(JSON.stringify(body), currentKey).catch(function (error) {
+        throw error;
+    });
+    let newSignature = await signResource(JSON.stringify(body), preRotatedKey).catch(function (error) {
+        throw error;
+    });
+    let signature = "signer=\"" + oldSignature + "\"; rotation=\"" + newSignature + "\";";
+
+    await batchPutHistory(signature, body, did, urls).catch(function (error) {
+        throw error;
+    });
+
+    return true;
 }
 
 // ================================================== //

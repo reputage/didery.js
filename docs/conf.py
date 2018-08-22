@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'dideryJS'
-copyright = '2018, Brady Hammond, Michael Mendoza'
+copyright = '2018, Consensys'
 author = 'Brady Hammond, Michael Mendoza'
 
 # The short X.Y version

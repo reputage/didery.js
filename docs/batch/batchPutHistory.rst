@@ -42,7 +42,7 @@ Example
         "http://myDideryServer.com",
         "http://anotherDideryServer.com",
         "http://oneMoreServer.com"
-   ]
+   ];
    let signature = 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";' +
                    'rotation="h6n48a7RgjHJNETKw82SWaNacYuS04ddc_lZtlijlG071GH0_90T2hyaprcBt2XM7VfKDjp2OnSteNNptFazDQ==";';
    let data = {
@@ -54,7 +54,7 @@ Example
             "8qOLfvSJfuDX2YjKh_BAUwSRD-TnDLhEpn9zP7cwf6Q=",
             "kAzBIalx6KT22M0CJyw2RqDibDiR0wwPXl5he6SDOIM="
         ]
-   }
+   };
    didery.batchPutHistory(signature, data, urls).then(function (response) {
         // Do something with response
    }).catch(function (error) {

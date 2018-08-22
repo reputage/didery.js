@@ -21,3 +21,4 @@ Help
    fromBase64
    keyInceptionEvent
    keyRotationEvent
+   keyRevocationEvent
