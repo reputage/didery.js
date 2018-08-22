@@ -1,0 +1,13 @@
+.gitignore
+.travis.yml
+semantic.json
+tests/*
+logo/*
+examples/*
+docs/*
+tests
+logo
+examples
+docs
+README.rst
+.idea

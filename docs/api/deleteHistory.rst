@@ -3,7 +3,8 @@ deleteHistory
 #############
 This function uses fetch to hit the DELETE history endpoint of a didery server. The DELETE history endpoint deletes a
 specific key history. Verification data will be checked against the given signature. If any discrepancies are found the
-operation will fail. This function is asynchronous.
+operation will fail. This function is asynchronous. Data should be signed with your current private key unless you have
+previously revoked your key. In such a case data should be signed with your last pre-rotated key.
 
 Parameters
 ==========

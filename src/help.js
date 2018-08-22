@@ -9,6 +9,7 @@
 //                     IMPORTS                        //
 // ================================================== //
 
+import "babel-polyfill";
 import {batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
 const fileSaver = require('file-saver');
@@ -373,6 +374,31 @@ export async function generateKeyPair(seed=[]) {
     catch (error) {
         throw error;
     }
+    /*let seedBuffer = libsodium.sodium_malloc(libsodium.crypto_sign_SEEDBYTES);
+    if (seed === undefined || seed.length === 0) {
+        libsodium.randombytes_buf(seedBuffer);
+    }
+
+    else {
+        if (typeof seed === "string") {
+            seed = stringToBytes(seed);
+        }
+
+        seedBuffer = Buffer.from(seed);
+    }
+
+    try {
+        let publicBuffer = libsodium.sodium_malloc(libsodium.crypto_sign_PUBLICKEYBYTES);
+        let secretBuffer = libsodium.sodium_malloc(libsodium.crypto_sign_SECRETKEYBYTES);
+        libsodium.crypto_sign_seed_keypair(publicBuffer, secretBuffer, seedBuffer);
+        let privateKey = new Uint8Array(secretBuffer);
+        let publicKey = new Uint8Array(publicBuffer);
+        return [privateKey, publicKey];
+    }
+
+    catch (error) {
+        throw error;
+    }*/
 }
 
 

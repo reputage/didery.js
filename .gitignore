@@ -329,3 +329,4 @@ src/dist
 .pytest_cache/
 examples/dashboard/index.js
 examples/sse/index.js
+README.md

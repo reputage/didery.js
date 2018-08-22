@@ -1,8 +1,13 @@
 {
-  "name": "didery.js",
-  "version": "1.0.0",
+  "name": "dideryjs",
+  "version": "0.0.37",
   "description": "Javascript client library for didery.",
-  "main": "dis/didery.js",
+  "keywords": [
+    "didery",
+    "dideryJS",
+    "key management"
+  ],
+  "main": "dist/didery.js",
   "scripts": {
     "mocha": "mocha --require babel-core/register --require babel-polyfill ./tests",
     "test": "./tests/test.sh",
@@ -18,19 +23,20 @@
     ]
   },
   "author": "Brady Hammond",
-  "license": "ISC",
+  "license": "(Apache-2.0)",
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "es6-promise": "^4.2.4",
     "file-saver": "^1.3.8",
     "isomorphic-fetch": "^2.2.1",
     "libsodium": "^0.7.3",
     "libsodium-wrappers": "^0.7.3",
     "moment": "^2.22.2",
-    "npm": "^6.1.0"
+    "npm": "^6.4.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "jquery": "^3.3.1",
     "jsdom": "^11.11.0",

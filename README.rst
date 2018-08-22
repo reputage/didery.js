@@ -50,13 +50,13 @@ The dideryJS library can also be downloaded as an npm repository. To do so make 
 package manager (npm) installed on your machine (see details above for installation instructions). With Node.js
 installed, the following terminal command can be run to install dideryJS:
 ::
-   $ npm install didery
-To save dideryJS as a project dependency run either:
+   $ npm install dideryjs
+To save dideryJS as a project dependency run either
 ::
-  $ npm install --save-dev didery
+  $ npm install --save-dev dideryjs
 for a development dependency, or
 ::
-  $ npm install --save didery
+  $ npm install --save dideryjs
 for a production dependency.
 
 Testing

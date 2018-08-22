@@ -9,7 +9,11 @@
 //                     IMPORTS                        //
 // ================================================== //
 
-import "isomorphic-fetch"
+import "babel-polyfill";
+import promise from 'es6-promise';
+import 'isomorphic-fetch';
+
+promise.polyfill();
 
 // ================================================== //
 //                     FUNCTIONS                      //
