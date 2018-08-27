@@ -1,5 +1,5 @@
 ##########################################
-dideryJS Documentation for 1.0.0 and later
+dideryJS Documentation for 0.1.0 and later
 ##########################################
 dideryJS helps users interface with distributed or soloed didery servers. The didery project aims at bring about proper
 key management by providing easy to use key management tools. This documentation is divided into three major parts
@@ -29,6 +29,7 @@ Table of Contents
    - `keyInceptionEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyInceptionEvent.rst>`_
    - `keyRotationEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyRotationEvent.rst>`_
    - `keyRevocationEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyRevocationEvent.rst>`_
+   - `verifyEvents <https://github.com/reputage/didery.js/blob/master/docs/help/verifyEvents.rst>`_
 - `API <https://github.com/reputage/didery.js/blob/master/docs/api>`_
    - `getHistory <https://github.com/reputage/didery.js/blob/master/docs/api/getHistory.rst>`_
    - `postHistory <https://github.com/reputage/didery.js/blob/master/docs/api/postHistory.rst>`_

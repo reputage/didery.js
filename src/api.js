@@ -406,6 +406,45 @@ export function getErrors(baseURL="http://127.0.0.1:8080/") {
 
 // ================================================== //
 
+export function getEvent(baseURL="http://127.0.0.1:8080/", did="") {
+    /** Hits the GET event endpoint of a didery server and returns the result of the ensuing promise.
+     *
+     * @param {string} baseURL - Optional string of server's base URL.
+     * @param {string} did - Optional string of DID (used to retrieve a single event entry).
+     *
+     * @return {string} or {Object} - Result of a fetch operation.
+     */
+    let fullURL = baseURL.replace(/\/$/, "") + "/event";
+    if (did !== "") {
+        fullURL += "/" + did;
+    }
+
+    let serverResponse = "Could not retrieve server response.";
+    return fetch(fullURL).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    }).then(function(obj) {
+        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+            serverResponse = "No events found.";
+        }
+        else if(obj.hasOwnProperty("data")) {
+            serverResponse = obj.data;
+        }
+        else {
+            serverResponse = obj;
+        }
+        return serverResponse;
+    }).catch(function(error) {
+        let message = 'There has been a problem with a fetch operation: ' + error.message;
+        console.error(message);
+        throw message;
+    });
+}
+
+// ================================================== //
+
 //export async function subscribeHistory(baseURL="http://127.0.0.1:8080", did="") {
     /** Subscribes to history server sent events from a didery server.
      *

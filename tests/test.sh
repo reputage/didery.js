@@ -5,7 +5,7 @@ set -o errexit
 test() {
     git clone https://github.com/reputage/didery.git
     cd didery
-    git checkout dev
+    #git checkout dev
     cd ..
     pip3 install -e didery
     dideryd --path .consensys/didery/db8080 &

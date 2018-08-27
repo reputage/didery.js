@@ -10,7 +10,7 @@
 // ================================================== //
 
 import "babel-polyfill";
-import {batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
+import {batchGetEvent, batchGetHistory, batchPostHistory, batchPutHistory} from "./batch";
 const _sodium = require('libsodium-wrappers');
 const fileSaver = require('file-saver');
 const moment = require('moment');
@@ -45,6 +45,42 @@ Object.compare = function (obj1, obj2) {
 
     for (let p in obj2) {
         if (typeof (obj1[p]) === 'undefined') return false;
+    }
+    return true;
+};
+
+// ================================================== //
+
+Array.compare = function (arr1, arr2) {
+    /** Compares two JavaScript arrays.
+     *
+     * @param {Array} arr1 - First JavaScript array to be compared.
+     * @param {Array} arr2 - Second JavaScript array to be compared.
+     *
+     * @return {boolean} - Returns true if array are the same, otherwise returns false.
+     */
+    if (!arr1) {
+        return false;
+    }
+
+    if (!arr2) {
+        return false;
+    }
+
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] instanceof Array && arr2[i] instanceof Array) {
+            if (!Array.compare(arr1[i], arr2[i])) {
+                return false;
+            }
+        }
+
+        else if (arr1[i] !== arr2[i]) {
+            return false;
+        }
     }
     return true;
 };
@@ -948,6 +984,53 @@ export async function keyRevocationEvent(currentKey, preRotatedKey, did, options
         throw error;
     });
 
+    return true;
+}
+
+// ================================================== //
+
+export async function verifyEvents(urls=["http://127.0.0.1:8080/"], did="") {
+    /** Verifies the events from one or more servers.
+     *
+     * @param {Array} urls - Array of server urls (comma separated strings).
+     * @param {string} did - Optional string of did (used to retrieve a single history entry),
+     *
+     * @return {Boolean} - Boolean of whether or not events could be verified.
+     */
+    let events = await batchGetEvent(urls, did);
+    if (Array.compare(events, [ [] ])) {
+        return true;
+    }
+    for (let i=0; i < events.length; i++) {
+        for (let j=0; j < events[i].length; j++) {
+            let eventGroup = JSON.parse(events[i][j])[0];
+            let message = JSON.stringify(eventGroup.event);
+            if (eventGroup.signatures.hasOwnProperty("rotation")) {
+                let pkIndex = eventGroup.event.signer;
+                let pk1 = eventGroup.event.signers[pkIndex];
+                let pk2 = eventGroup.event.signers[pkIndex-1];
+                let result = await verify64u(eventGroup.signatures.rotation, message, pk1);
+                if (result) {
+                    let result = await verify64u(eventGroup.signatures.signer, message, pk2);
+                    if (!result) {
+                        return false;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+
+            else {
+                let pkIndex = eventGroup.event.signer;
+                let pk = eventGroup.event.signers[pkIndex];
+                let result = await verify64u(eventGroup.signatures.signer, message, pk);
+                if (!result) {
+                    return false;
+                }
+            }
+        }
+    }
     return true;
 }
 

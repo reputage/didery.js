@@ -19,8 +19,8 @@ import * as api from './api';
 export async function batchGetHistory(urls, did="") {
     /** Hits the GET history endpoint of multiple didery servers and returns the result of the ensuing promises.
      *
-     * @param {Array} urls - Array of server urls (comma separated strings).
-     * @param {string} did - Optional string of did (used to retrieve a single history entry),
+     * @param {Array} urls - Array of server urls.
+     * @param {string} did - Optional string of DID (used to retrieve a single history entry),
      *
      * @return {Array} - Array of results from fetch operations.
     */
@@ -119,7 +119,7 @@ export async function batchGetBlobs(urls, did="") {
     /** Hits the GET blobs endpoint of multiple didery servers and returns the result of the ensuing promises.
      *
      * @param {Array} urls - Array of server urls.
-     * @param {string} did - Optional string of did (used to retrieve a single blob entry).
+     * @param {string} did - Optional string of DID (used to retrieve a single blob entry).
      *
      * @return {Array} - Array of results from fetch operations.
      */
@@ -169,7 +169,7 @@ export async function batchPutBlobs(signature, data, did, urls) {
      * @param {string} signature - String of signature for signature header (format of
      * 'signer="AeYbsHot0pmdWAcgTo5sD8iAuSQAfnH5U6wiIGpVNJQQoYKBYrPPxAoIc1i5SHCIDS8KFFgf8i0tDq8XGizaCg==";').
      * @param {Object} data - JSON of data to be posted to server.
-     * @param {string} did - String of did of blob to be edited.
+     * @param {string} did - String of DID of blob to be edited.
      * @param {Array} urls - Array of server urls.
      *
      * @return {Array} - Array of results from fetch operations.
@@ -291,6 +291,29 @@ export async function batchGetErrors(urls) {
     let responses = [];
     await Promise.all(urls.map(async url => {
         await api.getErrors(url).then(function(response) {
+            responses.push(response);
+        }).catch(function(error) {
+            console.error(error);
+            throw error;
+        });
+    }));
+
+    return responses;
+}
+
+// ================================================== //
+
+export async function batchGetEvent(urls, did="") {
+    /** Hits the GET history endpoint of multiple didery servers and returns the result of the ensuing promises.
+     *
+     * @param {Array} urls - Array of server urls.
+     * @param {string} did - Optional string of DID (used to retrieve a single event entry),
+     *
+     * @return {Array} - Array of results from fetch operations.
+     */
+    let responses = [];
+    await Promise.all(urls.map(async url => {
+        await api.getEvent(url, did).then(function(response) {
             responses.push(response);
         }).catch(function(error) {
             console.error(error);

@@ -1,6 +1,6 @@
 {
   "name": "dideryjs",
-  "version": "0.0.37",
+  "version": "0.1.0",
   "description": "Javascript client library for didery.",
   "keywords": [
     "didery",
@@ -9,7 +9,7 @@
   ],
   "main": "dist/didery.js",
   "scripts": {
-    "mocha": "mocha --require babel-core/register --require babel-polyfill ./tests",
+    "mocha": "mocha --timeout 10000 --require babel-core/register --require babel-polyfill ./tests",
     "test": "./tests/test.sh",
     "dev": "npx webpack --mode development",
     "watch": "npx webpack -w --mode development",

@@ -70,9 +70,9 @@ Examples
 ========
 Use cases for dideryJS can be found in the `examples
 <https://github.com/reputage/didery.js/tree/dev/examples>`_ folder of the project. Documentation and examples
-for each function can be found in the `docs <https://github.com/reputage/didery.js/tree/master/docs>`_ folder of the
-project. The examples included in the examples folder must have their JavaScript compiled before being viewed. This can
-be done by running the following terminal command:
+for each function can be found in the `docs <https://github.com/reputage/didery.js/tree/dev/docs/git-index.rst>`_ folder
+of the project. The examples included in the examples folder must have their JavaScript compiled before being viewed.
+This can be done by running the following terminal command:
 ::
   $ npm run <name of example>
 The index.html file of each example can then be opened in your web browser.
