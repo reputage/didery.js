@@ -29,6 +29,7 @@ Table of Contents
    - `keyInceptionEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyInceptionEvent.rst>`_
    - `keyRotationEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyRotationEvent.rst>`_
    - `keyRevocationEvent <https://github.com/reputage/didery.js/blob/master/docs/help/keyRevocationEvent.rst>`_
+   - `verifyEvents <https://github.com/reputage/didery.js/blob/master/docs/help/verifyEvents.rst>`_
 - `API <https://github.com/reputage/didery.js/blob/master/docs/api>`_
    - `getHistory <https://github.com/reputage/didery.js/blob/master/docs/api/getHistory.rst>`_
    - `postHistory <https://github.com/reputage/didery.js/blob/master/docs/api/postHistory.rst>`_
