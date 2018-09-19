@@ -44,10 +44,20 @@ it('Test batchGetHistory', async function() {
     let signature = "signer=\"j1clLcRGnHkO_JOnJF_iqWxYPmvl19p73e6PhNK0l4X_ZDhu7TSEbR-N-IV5NZozo3qPqTeFhFytjpuoZIahBA==\";";
     await batchPostHistory(signature, data, urls);
 
-    expected = [["{\"history\": {\"id\": \"did:dad:-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=\", \"changed\": " +
-    "\"2018-07-16T14:19:00-06:00\", \"signer\": 0, \"signers\": [\"-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=\", " +
-    "\"P7SqWvnWK4VBcIBpxB-T0HLhqTePqTonxbhQEqmNI0E=\"]}, \"signatures\": {\"signer\": " +
-    "\"j1clLcRGnHkO_JOnJF_iqWxYPmvl19p73e6PhNK0l4X_ZDhu7TSEbR-N-IV5NZozo3qPqTeFhFytjpuoZIahBA==\"}}"]];
+    expected = [[{
+        "history": {
+            "changed": "2018-07-16T14:19:00-06:00",
+            "id": "did:dad:-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=",
+            "signer": 0,
+            "signers": [
+                "-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=",
+                "P7SqWvnWK4VBcIBpxB-T0HLhqTePqTonxbhQEqmNI0E="
+            ]
+        },
+        "signatures": {
+            "signer": "j1clLcRGnHkO_JOnJF_iqWxYPmvl19p73e6PhNK0l4X_ZDhu7TSEbR-N-IV5NZozo3qPqTeFhFytjpuoZIahBA=="
+        }
+    }]];
     history = await batchGetHistory(urls);
     assert.deepEqual(history, expected);
 
@@ -91,10 +101,20 @@ it('Test batchPostHistory', async function() {
     let signature = "signer=\"j1clLcRGnHkO_JOnJF_iqWxYPmvl19p73e6PhNK0l4X_ZDhu7TSEbR-N-IV5NZozo3qPqTeFhFytjpuoZIahBA==\";";
     await batchPostHistory(signature, data, urls);
 
-    let expected = [[ "{\"history\": {\"id\": \"did:dad:-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=\", \"changed\": " +
-    "\"2018-07-16T14:19:00-06:00\", \"signer\": 0, \"signers\": [\"-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=\", " +
-    "\"P7SqWvnWK4VBcIBpxB-T0HLhqTePqTonxbhQEqmNI0E=\"]}, \"signatures\": {\"signer\": " +
-    "\"j1clLcRGnHkO_JOnJF_iqWxYPmvl19p73e6PhNK0l4X_ZDhu7TSEbR-N-IV5NZozo3qPqTeFhFytjpuoZIahBA==\"}}" ]];
+    let expected = [[{
+        "history": {
+            "changed": "2018-07-16T14:19:00-06:00",
+            "id": "did:dad:-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=",
+            "signer": 0,
+            "signers": [
+                "-fxPTdmNX1X4pZnLeCaHdPuMSPgt2v2ZoAyTHTrBKC8=",
+                "P7SqWvnWK4VBcIBpxB-T0HLhqTePqTonxbhQEqmNI0E="
+            ]
+        },
+        "signatures": {
+            "signer": "j1clLcRGnHkO_JOnJF_iqWxYPmvl19p73e6PhNK0l4X_ZDhu7TSEbR-N-IV5NZozo3qPqTeFhFytjpuoZIahBA=="
+        }
+    }]];
     let history = await batchGetHistory(urls);
     assert.deepEqual(history, expected);
 
@@ -133,12 +153,22 @@ it('Test batchPutHistory', async function() {
     signature = "signer=\"a-m7TDXAPCMhIfq_5ht72IcRR-V_XQmHFflT5VvZ7sV9yn4AuIy0VNkhHjwv0ExbSrwF0z0EM6ezfYTYXMgsDw==\"; " +
         "rotation=\"UBlV7rDA3sw5OMxsQ26pCEjdfefMO0ejvDDSP_EON1jb7ncgULKmRX3Iv2B5BS22ZgpHSzInLMUEBk25KwXZAg==\";";
     let did = "did:dad:bVjg9Xn5YHlEMcCbJHDH_JJNv66t8fE6_3vzNV-Aivs=";
-    let expected = [[ "{\"history\": {\"id\": \"did:dad:bVjg9Xn5YHlEMcCbJHDH_JJNv66t8fE6_3vzNV-Aivs=\", \"changed\": " +
-    "\"2018-07-16T16:18:59-06:00\", \"signer\": 1, \"signers\": [\"bVjg9Xn5YHlEMcCbJHDH_JJNv66t8fE6_3vzNV-Aivs=\", " +
-    "\"bV0elymgSHw5xpD9nErJJpGyWQvj6qnnN668XAIBHHI=\", \"1BC_o4AbIRueDQkYPWO6vqdTVG35H0X6Nx2h0zuCk_E=\"]}, " +
-    "\"signatures\": {\"signer\": " +
-    "\"a-m7TDXAPCMhIfq_5ht72IcRR-V_XQmHFflT5VvZ7sV9yn4AuIy0VNkhHjwv0ExbSrwF0z0EM6ezfYTYXMgsDw==\", \"rotation\": " +
-    "\"UBlV7rDA3sw5OMxsQ26pCEjdfefMO0ejvDDSP_EON1jb7ncgULKmRX3Iv2B5BS22ZgpHSzInLMUEBk25KwXZAg==\"}}" ]];
+    let expected = [[{
+        "history": {
+            "changed": "2018-07-16T16:18:59-06:00",
+            "id": "did:dad:bVjg9Xn5YHlEMcCbJHDH_JJNv66t8fE6_3vzNV-Aivs=",
+            "signer": 1,
+            "signers": [
+                "bVjg9Xn5YHlEMcCbJHDH_JJNv66t8fE6_3vzNV-Aivs=",
+                "bV0elymgSHw5xpD9nErJJpGyWQvj6qnnN668XAIBHHI=",
+                "1BC_o4AbIRueDQkYPWO6vqdTVG35H0X6Nx2h0zuCk_E="
+            ]
+        },
+        "signatures": {
+            "rotation": "UBlV7rDA3sw5OMxsQ26pCEjdfefMO0ejvDDSP_EON1jb7ncgULKmRX3Iv2B5BS22ZgpHSzInLMUEBk25KwXZAg==",
+            "signer": "a-m7TDXAPCMhIfq_5ht72IcRR-V_XQmHFflT5VvZ7sV9yn4AuIy0VNkhHjwv0ExbSrwF0z0EM6ezfYTYXMgsDw=="
+        }
+    }]];
     await batchPutHistory(signature, data, did, urls);
 
     let history = await batchGetHistory(urls);
